@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-backend
+  labels:
+    app: expense-backend
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-backend
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: expense-backend
+        tier: backend
+    spec:
+           
+      initContainers:
+      - name: connectivity-init-db
+        image: mysql:8.0
+        command: ["sh", "-c", 'echo -e "Checking for the availability of MySQL Server"; until mysqladmin ping -h "$DB_HOST" -u root -p"$MYSQL_ROOT_PASSWORD"; do sleep 1; printf "-"; done; echo -e "  >> MySQL DB Server has started";']
+        #command: ['/bin/bash', '-c', '/mnt/mysql_health_check.sh && mysql -h $MYSQL_HOST -u$MYSQL_ROOT_PASSWORD -p$MYSQL_ROOT_PASSWORD < /mnt/init.sql']
+        env:
+        - name: DB_HOST  
+          valueFrom:
+            configMapKeyRef:
+              name: expense-backend-env-vars  
+              key: DB_HOST  
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+            
+      containers:
+      - name: expense-backend-cont
+        image: vaheeddockerhub/backend-img
+        ports:
+        - name: expense-backend
+          containerPort: 8080
+        env:
+        - name: DB_PWD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: DB_PWD
+        envFrom:
+        - configMapRef:
+            name: expense-backend-env-vars
+
+        startupProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 6
+        
+        readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
+         
+        livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-backend
+  labels:
+    app: expense-backend
+    tier: backend
+spec:
+  #type: ClusterIP
+  selector:
+    app: expense-backend
+    tier: backend
+  ports:
+  - name: expense-backend
+    protocol: "TCP"
+    port: 8080
+    targetPort: 8080
+    #nodePort: 32123

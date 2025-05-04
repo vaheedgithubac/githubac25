@@ -1,0 +1,2 @@
+FROM nginx:1.27.4
+COPY frontend/code /usr/share/nginx/html/
