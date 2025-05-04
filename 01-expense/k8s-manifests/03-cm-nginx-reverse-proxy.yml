@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: expense-nginx-reverse-proxy
+data:
+  expense.conf: |
+        server {
+            
+            listen 80 default_server;  # Treated as default server for every request
+            server_name _;
+
+            proxy_http_version 1.1;
+
+            location / {
+                root   /usr/share/nginx/html;
+                index  index.html index.htm;
+                ssi    on;
+            }
+
+            # Proxy Pass to our Application
+            location /api/ {
+
+                proxy_pass         http://expense-backend:8080/;    # backend service name:port
+                proxy_redirect     off;
+                proxy_set_header   Host $host;
+                proxy_set_header   X-Real-IP $remote_addr;
+                proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header   X-Forwarded-Host $server_name;
+
+            }
+        
+            # Health check for NGINX (static page or simple response)
+            location /nginx-health {
+                return 200 "NGINX is healthy!";
+                add_header Content-Type text/plain;
+            } 
+
+            # Nginx Status
+            location /nginx-status {
+                stub_status on;              # Enable stub_status module
+                #allow 127.0.0.1;            # Allow requests from localhost  # 192.168.1.0/24
+                #deny all;                    # Deny all other IPs
+            }
+
+        }
