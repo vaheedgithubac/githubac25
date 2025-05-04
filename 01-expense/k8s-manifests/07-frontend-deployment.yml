@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-frontend
+  labels:
+    app: expense-frontend
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-frontend
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: expense-frontend
+        tier: frontend
+    spec:
+
+      volumes:
+      - name: expense-nginx-reverse-proxy
+        configMap:
+          name: expense-nginx-reverse-proxy
+
+      initContainers:
+      - name: check-nginx-ready
+        image: busybox:1.31
+        command: ['sh', '-c', 'echo -e "Checking for the availability of Backend Server deployment"; while ! nc -z expense-backend 8080; do sleep 1; printf "-"; done; echo -e "  >> Backend Server has been started";']
+
+      containers:
+      - name: expense-frontend-cont
+        image: nginx:1.27.4
+        ports:
+        - name: frontend
+          containerPort: 80
+        volumeMounts:
+        - name: expense-nginx-reverse-proxy
+          mountPath: /etc/nginx/conf.d/
+
+        startupProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 6
+
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        livenessProbe:
+          httpGet:
+            path: /nginx-health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+          
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-frontend
+  labels:
+    app: expense-frontend
+    tier: frontend
+spec:
+  type: NodePort
+  selector:
+    app: expense-frontend
+    tier: frontend
+  ports:
+  - name: expense-frontend
+    protocol: "TCP"
+    port: 80
+    targetPort: 80
+    nodePort: 32127
