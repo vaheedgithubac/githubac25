@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      db: mysql
+      tier: db
+  strategy:
+    type: Recreate 
+
+  template: 
+    metadata: 
+      labels: 
+        db: mysql
+        tier: db
+    spec: 
+      volumes:
+      - name: mysql-init-db
+        configMap:
+          name: mysql-initdb-config
+
+      - name: mysql-config
+        emptyDir: {}  # Creates a writable temporary directory for mysql.cnf
+
+      initContainers:
+        - name: init-mysql-config
+          image: busybox
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "[client]" > /var/tmp/mysql.cnf
+              echo "user=root" >> /var/tmp/mysql.cnf
+              echo "password=$MYSQL_ROOT_PASSWORD" >> /var/tmp/mysql.cnf
+              #echo "host=127.0.0.1" >> /var/tmp/mysql.cnf
+          volumeMounts:
+            - name: mysql-config
+              mountPath: /var/tmp
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD    
+
+      containers:
+        - name: mysql-cont
+          image: mysql:8.0
+          ports:
+          - containerPort: 3306
+            name: mysql 
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_ROOT_PASSWORD 
+          volumeMounts:
+            - name: mysql-init-db
+              mountPath: /docker-entrypoint-initdb.d/init.sql
+              subPath: init.sql  # Mount only init.sql, not the entire ConfigMap
+            - name: mysql-config
+              mountPath: /var/tmp
+              #subPath: mysql.cnf
+              
+          startupProbe:
+            exec:
+              #command: ["/bin/sh", "-c", "sleep 10; until mysqladmin ping -h 127.0.0.1 -uroot -p'$MYSQL_ROOT_PASSWORD' --silent; do echo waiting for mysql; sleep 2; done"]
+              command: ['sh', '-c', 'until mysql --defaults-extra-file=/var/tmp/mysql.cnf -h localhost -e "SELECT 1;" > /dev/null 2>&1;do echo waiting for mysql; sleep 2; done']
+            failureThreshold: 30   # Allows up to 5 minutes for MySQL startup (30 times * 10s)
+            periodSeconds: 10      # Check every 10 seconds
+            timeoutSeconds: 30     # Timeout if MySQL doesnt respond in 30 seconds
+
+          livenessProbe:
+            exec:
+              command: ['sh', '-c', 'mysqladmin --defaults-extra-file=/var/tmp/mysql.cnf ping -h 127.0.0.1']
+            initialDelaySeconds: 0  # Not needed since startupProbe ensures MySQL is running
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            exec:
+              command: ['sh', '-c', 'mysqladmin --defaults-extra-file=/var/tmp/mysql.cnf ping -h 127.0.0.1']
+            initialDelaySeconds: 0  # Handled by startupProbe
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 2
+
+      
+             
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+  labels:
+    db: mysql
+spec:
+  type: ClusterIP
+  #clusterIP: None # This means we are going to use Pod IP 
+  selector:
+    db: mysql
+    tier: db
+  ports:
+  - name: mysqldb-port
+    protocol: "TCP"
+    port: 3306
+    targetPort: 3306 

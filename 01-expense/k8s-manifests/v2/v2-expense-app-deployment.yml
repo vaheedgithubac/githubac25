@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-backend
+  labels:
+    app: expense-backend
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expense-backend
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: expense-backend
+        tier: backend
+    spec:
+
+      volumes:
+      - name: mysql-init-db
+        configMap:
+          name: mysql-initdb-config
+
+      initContainers:
+      - name: connectivity-init-db
+        image: mysql:8.0
+        command: ["sh", "-c", "chmod +x /mnt/mysql_health_check.sh && /mnt/mysql_health_check.sh"]
+        # command: ['/bin/bash', '-c', '/mnt/mysql_health_check.sh && mysql -h $MYSQL_HOST -u$MYSQL_ROOT_PASSWORD -p$MYSQL_ROOT_PASSWORD < /mnt/init.sql']
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_ROOT_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: expense-backend-env-vars
+
+        volumeMounts:
+        - name: mysql-init-db
+          mountPath: /mnt
+      
+      containers:
+      - name: expense-backend-cont
+        image: << vaheeddockerhub/new-python-img-devops-techstack >>
+        ports:
+        - name: expense-backend
+          containerPort: 8080
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: DB_PWD
+        envFrom:
+        - configMapRef:
+            name: expense-backend-env-vars
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-backend
+  labels:
+    app: expense-backend
+    tier: backend
+spec:
+  type: NodePort
+  selector:
+    app: expense-backend
+    tier: backend
+  ports:
+  - name: expense-backend
+    protocol: "TCP"
+    port: 8080
+    targetPort: 8080
+    nodePort: 32123
