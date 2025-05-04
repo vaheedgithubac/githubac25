@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  mysql.cnf: |
+      [client]
+      user=root
+      password=${MYSQL_ROOT_PASSWORD}
+      # host=127.0.0.1
+
+  # Mysql health check
+  mysql_health_check.sh: |
+      
+      #!/usr/bin/env bash
+      MAX_RETRIES=30  # Set max retries (30 seconds)
+      RETRY_COUNT=0
+
+      while ! mysqladmin ping -h $MYSQL_HOST -u root -p$MYSQL_ROOT_PASSWORD --silent
+      do 
+        sleep 1
+        printf "-"
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+
+        if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
+          echo " [ERROR] MySQL did not start within $MAX_RETRIES seconds. Exiting."
+          exit 1  # Exit with failure
+        fi
+      done
+
+      echo "*** [OK] Mysql is up and running ***"
+      # mysql -h $MYSQL_HOST -u root -p${MYSQL_ROOT_PASSWORD} -e "SELECT 1"
+      mysql -h $MYSQL_HOST -u root -p${MYSQL_ROOT_PASSWORD} < /mnt/init.sql
+  
+
+  # Mysql init script
+  init.sql: |
+
+      CREATE DATABASE IF NOT EXISTS transactions;
+      USE transactions;
+
+      CREATE TABLE IF NOT EXISTS transactions (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          amount INT,
+          description VARCHAR(255)
+      );
+
+      CREATE USER IF NOT EXISTS 'expense'@'%' IDENTIFIED BY 'ExpenseApp@1';
+      GRANT ALL PRIVILEGES ON transactions.* TO 'expense'@'%';
+      FLUSH PRIVILEGES;
