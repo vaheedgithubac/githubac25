@@ -17,7 +17,8 @@ spec:
         app: expense-frontend
         tier: frontend
     spec:
-
+      imagePullSecrets:
+        - name: my-docker-registry-key
      # volumes:
      # - name: expense-nginx-reverse-proxy
      #   configMap:
