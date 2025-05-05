@@ -1,5 +1,7 @@
-# docker build -t expense-backend:1.0.0 -f Dockerfile-backend /home/ubuntu/githubac25/01-expense/app-code/
 FROM nginx:1.27.4
 COPY frontend/expense.conf /etc/nginx/conf.d/expense.conf
 COPY frontend/code/ /usr/share/nginx/html/
 # USER nginx  # Not working
+
+
+# docker build -t expense-frontend:1.0.0 -f Dockerfile-backend /home/ubuntu/githubac25/01-expense/app-code/
