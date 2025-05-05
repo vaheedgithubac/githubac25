@@ -1,8 +1,8 @@
 #FROM node:20
 FROM node:20.18.3-alpine3.21 AS builder
 WORKDIR /opt/backend
-COPY ../app-code/backend/package.json ./
-COPY ../app-code/backend/*.js ./
+COPY backend/package.json ./
+COPY backend/*.js ./
 RUN npm install
 
 
@@ -16,3 +16,4 @@ USER expense
 COPY --from=builder /opt/backend /opt/backend
 CMD ["node", "index.js"]
 
+# docker build -t expense-backend:1.0.0 -f Dockerfile-backend /home/ubuntu/githubac25/01-expense/app-code/
