@@ -17,7 +17,9 @@ spec:
         app: expense-backend
         tier: backend
     spec:
-           
+      imagePullSecrets:
+        - name: my-docker-registry-key
+        
       initContainers:
       - name: connectivity-init-db
         image: mysql:8.0
