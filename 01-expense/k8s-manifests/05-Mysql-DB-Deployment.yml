@@ -17,14 +17,9 @@ spec:
         db: mysql
         tier: db
     spec: 
-      volumes:
-      - name: mysql-init-db
-        configMap:
-          name: mysql-initdb-config
-
       containers:
         - name: mysql-cont
-          image: mysql:8.0
+          image: vaheeddockerhub/expense-mysql:1.0.0
           ports:
           - containerPort: 3306
             name: mysql 
@@ -34,11 +29,7 @@ spec:
               secretKeyRef:
                 name: mysql-secret
                 key: MYSQL_ROOT_PASSWORD 
-          volumeMounts:
-            - name: mysql-init-db
-              mountPath: /docker-entrypoint-initdb.d/init.sql
-              subPath: init.sql              # Mount only init.sql, not the entire ConfigMap
-              
+                     
           startupProbe:
             exec:
               #command: ["/bin/sh", "-c", "sleep 10; until mysqladmin ping -h 127.0.0.1 -uroot -p'$MYSQL_ROOT_PASSWORD' --silent; do echo waiting for mysql; sleep 2; done"]
