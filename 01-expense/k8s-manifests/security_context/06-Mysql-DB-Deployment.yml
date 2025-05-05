@@ -19,6 +19,12 @@ spec:
     spec: 
       imagePullSecrets:
         - name: my-docker-registry-key
+        
+      securityContext:       # Pod level  "security context"
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 2000
+        
       containers:
         - name: mysql-cont
           image: vaheeddockerhub/expense-mysql:1.0.0
@@ -32,7 +38,14 @@ spec:
               secretKeyRef:
                 name: mysql-secret
                 key: MYSQL_ROOT_PASSWORD 
-                     
+          
+          securityContext:    # Container level "security context"
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]     
+              
           startupProbe:
             exec:
               #command: ["/bin/sh", "-c", "sleep 10; until mysqladmin ping -h 127.0.0.1 -uroot -p'$MYSQL_ROOT_PASSWORD' --silent; do echo waiting for mysql; sleep 2; done"]
