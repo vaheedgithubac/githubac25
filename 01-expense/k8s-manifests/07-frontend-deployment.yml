@@ -18,10 +18,10 @@ spec:
         tier: frontend
     spec:
 
-      volumes:
-      - name: expense-nginx-reverse-proxy
-        configMap:
-          name: expense-nginx-reverse-proxy
+     # volumes:
+     # - name: expense-nginx-reverse-proxy
+     #   configMap:
+     #     name: expense-nginx-reverse-proxy
 
       initContainers:
       - name: check-nginx-ready
@@ -30,13 +30,13 @@ spec:
 
       containers:
       - name: expense-frontend-cont
-        image: nginx:1.27.4
+        image: vaheeddockerhub/expense-frontend:1.0.0
         ports:
         - name: frontend
           containerPort: 80
-        volumeMounts:
-        - name: expense-nginx-reverse-proxy
-          mountPath: /etc/nginx/conf.d/
+      #  volumeMounts:
+      #  - name: expense-nginx-reverse-proxy
+      #    mountPath: /etc/nginx/conf.d/
 
         startupProbe:
           tcpSocket:
