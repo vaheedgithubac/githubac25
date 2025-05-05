@@ -38,6 +38,7 @@ spec:
       containers:
       - name: expense-backend-cont
         image: vaheeddockerhub/expense-backend:1.0.0
+        imagePullPolicy: Always
         ports:
         - name: expense-backend
           containerPort: 8080
