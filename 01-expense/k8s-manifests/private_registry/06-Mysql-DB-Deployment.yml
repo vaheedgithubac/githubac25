@@ -17,6 +17,8 @@ spec:
         db: mysql
         tier: db
     spec: 
+      imagePullSecrets:
+        - name: my-docker-registry-key
       containers:
         - name: mysql-cont
           image: vaheeddockerhub/expense-mysql:1.0.0
