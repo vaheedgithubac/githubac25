@@ -19,7 +19,7 @@ spec:
     spec: 
       containers:
         - name: mysql-cont
-          image: {imgTag}
+          image: vaheeddockerhub/expense-mysql:{imgTag}
           imagePullPolicy: Always
           ports:
           - containerPort: 3306
