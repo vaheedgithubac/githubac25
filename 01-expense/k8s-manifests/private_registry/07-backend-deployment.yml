@@ -39,7 +39,7 @@ spec:
             
       containers:
       - name: expense-backend-cont
-        image: vaheeddockerhub/expense-backend:1.0.0
+        image: vaheeddockerhub/private-repo:expense-backend-1.0.0
         imagePullPolicy: Always
         ports:
         - name: expense-backend
