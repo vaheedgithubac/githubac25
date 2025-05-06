@@ -8,7 +8,7 @@ set -e
 GITHUB_USERNAME="$1"
 GITHUB_TOKEN="$2"
 REPO_NAME="$3"
-IMAGE_NAME="$4"                 # e.g., your-registry/your-image
+IMAGE_NAME="$4"                # e.g., your-registry/your-image
 DEPLOYMENT_FILE="$5"           # e.g., k8s/deployment.yaml
 BRANCH="${6:-main}"            # Optional: defaults to main
 
