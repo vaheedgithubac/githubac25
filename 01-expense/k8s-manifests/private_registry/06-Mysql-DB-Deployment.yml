@@ -21,7 +21,7 @@ spec:
         - name: my-docker-registry-key
       containers:
         - name: mysql-cont
-          image: vaheeddockerhub/expense-mysql:1.0.0
+          image: vaheeddockerhub/private-repo:expense-mysql-1.0.0
           imagePullPolicy: Always
           ports:
           - containerPort: 3306
