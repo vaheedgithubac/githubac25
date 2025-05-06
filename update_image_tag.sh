@@ -33,7 +33,7 @@ echo "Using commit hash: $COMMIT_HASH"
 # === UPDATE DEPLOYMENT FILE ===
 echo "Updating $DEPLOYMENT_FILE to use image tag: $COMMIT_HASH"
 # sed -i.bak -E "s|(${IMAGE_NAME}:)[a-zA-Z0-9._-]+|\1${COMMIT_HASH}|" "$DEPLOYMENT_FILE"
-sed -i "s#image: ${IMAGE_NAME}:.*#image: ${IMAGE_NAME}:${COMMIT_HASH}#" "$DEPLOYMENT_FILE"
+sed -i.bak "s#image: ${IMAGE_NAME}:.*#image: ${IMAGE_NAME}:${COMMIT_HASH}#" "$DEPLOYMENT_FILE"
 
 # === COMMIT AND PUSH ===
 git add "$DEPLOYMENT_FILE"
