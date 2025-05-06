@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      db: mysql
+      tier: db
+  strategy:
+    type: Recreate 
+
+  template: 
+    metadata: 
+      labels: 
+        db: mysql
+        tier: db
+    spec: 
+      containers:
+        - name: mysql-cont
+          image: vaheeddockerhub/expense-mysql:1.0.0
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 3306
+            name: mysql 
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: MYSQL_ROOT_PASSWORD 
