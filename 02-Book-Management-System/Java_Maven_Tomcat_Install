@@ -3,8 +3,8 @@ https://www.codejava.net/coding/jsp-servlet-jdbc-mysql-create-read-update-delete
 S/W requirements:
 ==================
 Java_Version: 8
-Tomcat_Version: 8.x 
-Mysql_Version: 5.x
+Tomcat_Version: 8.5
+Mysql_Version: 5.7
 
 wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.99/bin/apache-tomcat-8.5.99.tar.gz
 
