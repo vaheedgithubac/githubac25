@@ -86,3 +86,20 @@ Copy war to Tomcat Server:
 ==========================
 1. First establish SSH connection between servers
 2. scp book.war ec2-user@<public-ip/private-ip>:/opt/tomcat/webapps
+
+
+Dockerizing the Application:
+============================
+mvn clean package -f app-code/
+
+docker build -t mysql-1 -f mysql-Dockerfile .
+docker build -t tomcat-1 -f tomcat-Dockerfile .
+
+docker network create book
+
+docker run -d --name mysql -p 3306:3306 --network=book -e MYSQL_ROOT_PASSWORD=P@ssw0rd mysql-1
+docker run -d --name tomcat -p 8080:8080 --network=book tomcat-1
+
+Accessing the Application:
+==========================
+<public-ip>:8080/Bookstore
