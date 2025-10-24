@@ -102,6 +102,8 @@ docker network create book
 docker run -d --name mysql -p 3306:3306 --network=book -e MYSQL_ROOT_PASSWORD=P@ssw0rd mysql-1
 docker run -d --name tomcat -p 8080:8080 --network=book tomcat-1
 
+docker network inspect book (check whether both containers attached to 'book' network)
+
 Accessing the Application:
 ==========================
 <public-ip>:8080/Bookstore
