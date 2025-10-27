@@ -34,7 +34,8 @@ public class BookDAO {
         if (jdbcConnection == null || jdbcConnection.isClosed()) {
             try {
                 // Use the new MySQL driver class name if you're on MySQL 8+
-                Class.forName("com.mysql.cj.jdbc.Driver");
+               // Class.forName("com.mysql.cj.jdbc.Driver");
+                Class.forName("com.mysql.jdbc.Driver");
             } catch (ClassNotFoundException e) {
                 throw new SQLException(e);
             }
