@@ -2,4 +2,4 @@
 FROM mysql:5.7.28
 
 #COPY
-COPY ./app-code/sql/Bookstore.sql /docker-entrypoint-initdb.d
+COPY ../app-code/sql/Bookstore.sql /docker-entrypoint-initdb.d
