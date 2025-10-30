@@ -20,7 +20,7 @@ services:
     volumes:
       - ./book.conf:/etc/nginx/conf.d/book.conf:ro  # Custom NGINX configuration
 
-  java-app:
+  tomcat:
     image: tomcat-1
     ports:
       - "8080"
