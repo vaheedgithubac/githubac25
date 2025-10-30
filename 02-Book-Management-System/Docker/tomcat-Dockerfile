@@ -1,0 +1,13 @@
+#Base image
+
+# FROM tomcat:8.5-jdk8
+# FROM tomcat:8.5-jre8
+
+FROM tomcat:8.5-jre8-alpine
+
+#COPY
+COPY ./app-code/target/Bookstore-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/Bookstore.war
+
+WORKDIR /usr/local/tomcat/webapps/
+
+CMD ["catalina.sh", "run"]
