@@ -33,7 +33,7 @@ services:
     networks:
       - book
     healthcheck:
-      #test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      #test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"] # To check only port 8080 is open or not
       #test: ["CMD", "curl", "-f", "http://localhost:8080/Bookstore"]  # "curl" is  Better than using "netstat", but "curl" should be present in tomcat image
 
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/Bookstore || exit 1"]  # works with tomcat-8.5-alpine image
