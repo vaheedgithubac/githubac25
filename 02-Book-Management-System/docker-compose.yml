@@ -1,0 +1,61 @@
+# mvn clean package -f app-code
+# docker build -t tomcat-1 -f tomcat-Dockerfile .
+# docker build -t mysql-1 -f mysql-Dockerfile .
+
+version: "3.9"
+
+services:
+ 
+   web-nginx:
+    image: nginx:1.27.4
+    container_name: book-nginx
+    ports:
+      - "80:80"  # NGINX listens on port 80 of the host
+    depends_on:
+      java-app:
+        condition: service_healthy
+        restart: true 
+    networks:
+      - book  
+    volumes:
+      - ./book.conf:/etc/nginx/conf.d/book.conf:ro  # Custom NGINX configuration
+
+  java-app:
+    image: tomcat-1
+    ports:
+      - "8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+    networks:
+      - book
+    healthcheck:
+      test: ["CMD", "netstat", "-tulnp", "|", "grep", ":8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    
+  mysql:
+    image: mysql-1
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+    networks:
+      - book
+    volumes:
+      - mydb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pP@ssw0rd"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+networks:
+  book:
+    driver: bridge
+
+volumes:
+  mydb:
+    name: expense-mysqldb-data-v1
