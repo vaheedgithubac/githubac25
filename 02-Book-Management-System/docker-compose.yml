@@ -34,7 +34,9 @@ services:
       - book
     healthcheck:
       #test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
-      test: ["CMD", "curl", "-f", "http://localhost:8080/Bookstore"]  # "curl" is  Better than using "netstat", but "curl" should be present in tomcat image
+      #test: ["CMD", "curl", "-f", "http://localhost:8080/Bookstore"]  # "curl" is  Better than using "netstat", but "curl" should be present in tomcat image
+
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/Bookstore || exit 1"]  # works with tomcat-8.5-alpine image
       interval: 10s
       timeout: 5s
       retries: 5
