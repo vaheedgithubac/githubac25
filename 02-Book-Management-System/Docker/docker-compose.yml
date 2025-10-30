@@ -65,4 +65,4 @@ networks:
 
 volumes:
   mydb:
-    name: expense-mysqldb-data-v1
+    name: book-mysqldb-data-v1
