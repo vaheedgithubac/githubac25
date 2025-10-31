@@ -1,0 +1,54 @@
+Amazon Linux:
+=============
+sudo yum install java-11-amazon-coretto-headless
+sudo yum install java-1.8.0-amazon-corretto-devel
+
+wget maven/tar/file
+tar -xvzf maven/tar/folder
+sudo vi /etc/profile(file)
+	export M2_HOME=path/to/maven
+	export PATH=$PATH:${M2_HOME}/bin
+
+Note: vi /etc/profile.d/maven.sh
+       export M2_HOME=/opt/maven-3911
+       export PATH=$PATH:${M2_HOME}/bin
+
+      source /etc/profile.d/maven.sh
+
+Ubuntu:
+=======
+sudo apt install openjdk-11-jdk	
+wget maven/tar/folder
+tar -xvzf maven/tar/folder
+sudo vi /etc/profile
+	M2_HOME=path/to/maven
+	PATH=$PATH:${M2_HOME}/bin
+
+
+Tomcat:
+=======
+wget https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.99/bin/apache-tomcat-8.5.99.tar.gz
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.83/bin/apache-tomcat-9.0.83.tar.gz
+sudo vi /etc/profile
+	export CATALINA_HOME=/home/ubuntu/apache-tomcat
+	export PATH=$PATH:${CATALINA_HOME}/bin
+
+Tomcat Port Change:
+==================
+vi /opt/tomcat/conf/server.xml
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443"/>
+    
+Tomcat User Creation:
+=====================
+/opt/tomcat/conf/tomcat-users.xml
+
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<user username="tomcat" password="tomcat" roles="manager-gui, manager-script"/>
+
+Copy war to Tomcat Server:
+==========================
+1. First establish SSH connection between servers
+2. scp book.war ec2-user@<public-ip/private-ip>:/opt/tomcat/webapps
