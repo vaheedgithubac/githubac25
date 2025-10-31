@@ -91,6 +91,6 @@
 
     - name: Print installed Docker Compose version
       ansible.builtin.debug:
-        msg: "{{ compose_version.stdout }}"
+        msg: "{{ compose_version.stdout_lines }}"
 
 
