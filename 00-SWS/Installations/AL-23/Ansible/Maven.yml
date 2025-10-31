@@ -1,0 +1,83 @@
+---
+- name: Install Maven on Amazon Linux 2023 Server
+  hosts: all
+  become: yes
+  vars:
+    java_version: "1.8.0"
+    maven_version: "3.9.11"
+    maven_install_dir: "/opt/maven"
+    maven_download_url: "https://dlcdn.apache.org/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+
+    - name: Ensure ssh port open
+      wait_for:
+        port: 22
+        delay: 10
+        timeout: 100
+        search_regex: OpenSSH
+        host: "{{ ( ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+      vars:
+        ansible_connection: local
+
+    - name: Ensure system packages are up to date
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - tar
+          - "java-{{ java_version }}-amazon-corretto-devel"
+        state: present
+        update_cache: yes
+
+    - name: Download Apache Maven tarball
+      ansible.builtin.get_url:
+        url: "{{ maven_download_url }}"
+        dest: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+        mode: "0644"
+        force: yes
+
+    - name: Create Maven install directory
+      ansible.builtin.file:
+        path: "{{ maven_install_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Extract Maven tarball
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+        dest: "{{ maven_install_dir }}"
+        remote_src: yes
+        creates: "{{ maven_install_dir }}/apache-maven-{{ maven_version }}"
+
+    - name: Set Maven environment variables
+      ansible.builtin.copy:
+        dest: /etc/profile.d/maven.sh
+        content: |
+          export M2_HOME={{ maven_install_dir }}/apache-maven-{{ maven_version }}
+          export PATH=$M2_HOME/bin:$PATH
+        mode: "0755"
+
+    # - name: Add Maven to PATH
+    #   lineinfile:
+    #     path: /etc/profile.d/maven.sh
+    #     line: 'export PATH=$PATH:/opt/maven/bin'
+    #     create: yes
+    #     mode: '0755'
+
+    - name: Ensure Maven is available
+      ansible.builtin.shell: source /etc/profile.d/maven.sh && mvn -version
+      register: maven_version_check
+      changed_when: false
+
+    - name: Reconnect to server session
+      meta: reset_connection
+
+    - name: Show installed Maven version
+      ansible.builtin.debug:
+        msg: "{{ maven_version_check.stdout }}"
