@@ -80,4 +80,4 @@
 
     - name: Show installed Maven version
       ansible.builtin.debug:
-        msg: "{{ maven_version_check.stdout }}"
+        msg: "{{ maven_version_check.stdout_lines }}"
