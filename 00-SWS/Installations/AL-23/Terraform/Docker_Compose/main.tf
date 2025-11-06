@@ -10,7 +10,7 @@ module "docker_sg" {
 }
 
 # Docker should be accessed from office n/w   0.0.0.0/0 ---> jenkins
-resource "aws_security_group_rule" "jenkins_ssh" {
+resource "aws_security_group_rule" "docker_ssh" {
   type              = "ingress"
   from_port         = 22
   to_port           = 22
@@ -20,7 +20,7 @@ resource "aws_security_group_rule" "jenkins_ssh" {
 }
 
 # Docker should be accessed from office n/w   0.0.0.0/0 ---> bastion
-resource "aws_security_group_rule" "jenkins_public" {
+resource "aws_security_group_rule" "docker_public" {
   type              = "ingress"
   from_port         = 8080
   to_port           = 8080
