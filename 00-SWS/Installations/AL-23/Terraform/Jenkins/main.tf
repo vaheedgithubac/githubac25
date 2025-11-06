@@ -64,7 +64,7 @@ resource "null_resource" "ansible_provisioner" {
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    host        = module.jenkins_ec2.ec2_instance.public_ip
+    host        = module.jenkins_ec2.ec2_instance.private_ip
     private_key = file(var.private_key_path)
     timeout     = "5m"
   }
