@@ -1,0 +1,135 @@
+# ansible-playbook -i 15.207.100.124, tomcat.yml --ssh-extra-args="-o StrictHostKeyChecking=no -o ConnectTimeout=10" --private-key=ansible.pem #--user=ec2-user
+
+- name: Install Tomcat on Amazon Linux 2023 Server
+  hosts: all
+  become: yes
+  vars:
+    java_version: "1.8.0"
+    tomcat_version: "8.5.9"    # 9.0.83 Change to your required Tomcat version
+    tomcat_v: "8"
+    tomcat_install_dir: "/opt/tomcat"
+    tomcat_user: "tomcat"
+    tomcat_group: "tomcat"
+    ansible_python_interpreter: /usr/bin/python3
+
+    #ansible_python_interpreter: /usr/libexec/platform-python
+    #tomcat_download_url: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.96/bin/apache-tomcat-8.5.96.tar.gz"
+  tasks:
+
+    - name: Ensure ssh port open
+      wait_for:
+        port: 22
+        delay: 10
+        timeout: 100
+        search_regex: OpenSSH
+        host: "{{ ( ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+      vars:
+        ansible_connection: local
+
+    - name: Ensure system packages are up to date
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name:
+          - wget
+          - tar
+          - "java-{{ java_version }}-amazon-corretto-devel"
+        state: present
+        update_cache: yes
+
+    - name: Create Tomcat group
+      ansible.builtin.group:
+        name: "{{ tomcat_group }}"
+        state: present
+
+    - name: Create Tomcat user
+      ansible.builtin.user:
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        shell: /bin/false
+        system: yes
+        create_home: no
+
+    - name: Create Tomcat installation directory
+      ansible.builtin.file:
+        path: "{{ tomcat_install_dir }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "0755"
+
+    - name: Download Tomcat tarball
+      ansible.builtin.get_url:
+        url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_v }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        mode: "0644"
+
+    - name: Extract Tomcat tarball
+      ansible.builtin.unarchive:
+        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "{{ tomcat_install_dir }}"
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+
+    - name: Ensure Tomcat user owns installation
+      ansible.builtin.file:
+        path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+        state: directory
+        recurse: yes
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+
+    - name: Create systemd service file for Tomcat
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/tomcat.service
+        owner: root
+        group: root
+        mode: "0644"
+
+        content: |
+          [Unit]
+          Description=Apache Tomcat Web Application Container
+          After=network.target
+
+          [Service]
+          Type=forking
+          User={{ tomcat_user }}
+          Group={{ tomcat_group }}
+
+          Environment="JAVA_HOME=/usr/lib/jvm/java-{{ java_version }}-amazon-corretto"
+
+          Environment="CATALINA_PID={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/temp/tomcat.pid"
+          Environment="CATALINA_HOME={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+          Environment="CATALINA_BASE={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+          # Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+
+          ExecStart={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh
+          ExecStop={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/shutdown.sh
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Tomcat service
+      ansible.builtin.systemd:
+        name: tomcat
+        enabled: yes
+        state: started
+
+    - name: Verify Tomcat is running
+      ansible.builtin.command: "systemctl is-active tomcat"
+      register: tomcat_status
+      changed_when: false
+      failed_when: tomcat_status.stdout != "active"
+
+    - name: Show Tomcat status
+      ansible.builtin.debug:
+        msg: "Tomcat is {{ tomcat_status.stdout_lines }}"
