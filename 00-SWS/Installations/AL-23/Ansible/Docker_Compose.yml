@@ -23,15 +23,22 @@
 
   tasks:
 
-    - name: Ensure ssh port open
+    - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
       wait_for:
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
         port: 22
-        delay: 10
-        timeout: 100
-        search_regex: OpenSSH
-        host: "{{ ( ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
-      vars:
-        ansible_connection: local
+        state: started
+        timeout: 120         # max wait 2 minutes per attempt
+        delay: 10            # wait 10s before the first try
+      delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
+      register: ssh_chec
+      retries: 5             # retry 5 times if the task fails
+      delay: 15              # wait 15s between retries
+      until: ssh_check is succeeded
+
+    - name: Confirm SSH is reachable
+      debug:
+        msg: "✅ SSH is ready on {{ inventory_hostname }}"
 
     - name: Ensure system packages are up to date
       ansible.builtin.package:
@@ -45,7 +52,7 @@
         state: present
         update_cache: yes
      
-    - name: Add ec2-user to docker group
+    - name: Add {{ user }} to docker group
       ansible.builtin.user:
         name: "{{ user }}"
         groups: docker
@@ -79,7 +86,7 @@
       changed_when: false
       failed_when: docker_version.rc != 0
 
-    - name: Print installed Docker Compose version
+    - name: Print installed Docker version
       ansible.builtin.debug:
         msg: "{{ docker_version.stdout_lines }}"
 
@@ -92,5 +99,4 @@
     - name: Print installed Docker Compose version
       ansible.builtin.debug:
         msg: "{{ compose_version.stdout_lines }}"
-
 
