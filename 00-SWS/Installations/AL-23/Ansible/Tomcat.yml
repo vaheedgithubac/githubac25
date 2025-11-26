@@ -7,24 +7,41 @@
     java_version: "1.8.0"
     tomcat_version: "8.5.9"    # 9.0.83 Change to your required Tomcat version
     tomcat_v: "8"
+
+    java_package: "java-{{ java_version }}-amazon-corretto-devel"
+    tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_v }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    tomcat_tar_package: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+    tomcat_extracted_dir: "apache-tomcat-{{ tomcat_version }}"
+    tomcat_download_dir: "/tmp"
     tomcat_install_dir: "/opt/tomcat"
+    tomcat_symlink_name: "tomcat"
+    tomcat_service_name: "tomcat"
     tomcat_user: "tomcat"
     tomcat_group: "tomcat"
+    tomcat_port: 8080
+
     ansible_python_interpreter: /usr/bin/python3
 
     #ansible_python_interpreter: /usr/libexec/platform-python
     #tomcat_download_url: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.96/bin/apache-tomcat-8.5.96.tar.gz"
   tasks:
 
-    - name: Ensure ssh port open
+    - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
       wait_for:
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
         port: 22
-        delay: 10
-        timeout: 100
-        search_regex: OpenSSH
-        host: "{{ ( ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
-      vars:
-        ansible_connection: local
+        state: started
+        timeout: 120         # max wait 2 minutes per attempt
+        delay: 10            # wait 10s before the first try
+      delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
+      register: ssh_chec
+      retries: 5             # retry 5 times if the task fails
+      delay: 15              # wait 15s between retries
+      until: ssh_check is succeeded
+
+    - name: Confirm SSH is reachable
+      debug:
+        msg: "✅ SSH is ready on {{ inventory_hostname }}"
 
     - name: Ensure system packages are up to date
       ansible.builtin.dnf:
@@ -37,7 +54,7 @@
         name:
           - wget
           - tar
-          - "java-{{ java_version }}-amazon-corretto-devel"
+          - "{{ java_package }}"
         state: present
         update_cache: yes
 
@@ -54,6 +71,12 @@
         system: yes
         create_home: no
 
+    - name: Download Tomcat tarball
+      ansible.builtin.get_url:
+        url: "{{ tomcat_download_url }}"
+        dest: "{{ tomcat_download_dir }}"
+        mode: "0644"
+
     - name: Create Tomcat installation directory
       ansible.builtin.file:
         path: "{{ tomcat_install_dir }}"
@@ -62,22 +85,23 @@
         group: "{{ tomcat_group }}"
         mode: "0755"
 
-    - name: Download Tomcat tarball
-      ansible.builtin.get_url:
-        url: "https://archive.apache.org/dist/tomcat/tomcat-{{ tomcat_v }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
-        dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
-        mode: "0644"
-
     - name: Extract Tomcat tarball
       ansible.builtin.unarchive:
-        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        src: "{{ tomcat_download_dir }}/{{ tomcat_tar_package }}"
         dest: "{{ tomcat_install_dir }}"
         remote_src: yes
-        creates: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+        creates: "{{ tomcat_install_dir }}/{{ tomcat_extracted_dir }}"
+
+    - name: Create symlink for current tomcat version
+      file:
+        src: "{{ tomcat_install_dir }}/{{ tomcat_extracted_dir }}"
+        dest: "{{ tomcat_install_dir }}/{{ tomcat_symlink_name }}"
+        state: link
+        force: yes
 
     - name: Ensure Tomcat user owns installation
       ansible.builtin.file:
-        path: "{{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+        path: "{{ tomcat_install_dir }}"
         state: directory
         recurse: yes
         owner: "{{ tomcat_user }}"
@@ -85,7 +109,7 @@
 
     - name: Create systemd service file for Tomcat
       ansible.builtin.copy:
-        dest: /etc/systemd/system/tomcat.service
+        dest: /etc/systemd/system/{{ tomcat_service_name }}.service
         owner: root
         group: root
         mode: "0644"
@@ -102,13 +126,13 @@
 
           Environment="JAVA_HOME=/usr/lib/jvm/java-{{ java_version }}-amazon-corretto"
 
-          Environment="CATALINA_PID={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/temp/tomcat.pid"
-          Environment="CATALINA_HOME={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
-          Environment="CATALINA_BASE={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}"
+          Environment="CATALINA_PID={{ tomcat_install_dir }}/{{ tomcat_extracted_dir }}/temp/tomcat.pid"
+          Environment="CATALINA_HOME={{ tomcat_install_dir }}/{{ tomcat_extracted_dir }}"
+          Environment="CATALINA_BASE={{ tomcat_install_dir }}/{{ tomcat_extracted_dir }}"
           # Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
 
-          ExecStart={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh
-          ExecStop={{ tomcat_install_dir }}/apache-tomcat-{{ tomcat_version }}/bin/shutdown.sh
+          ExecStart={{ tomcat_install_dir }}/{{ tomcat_symlink_name }}/bin/startup.sh
+          ExecStop={{ tomcat_install_dir }}/{{ tomcat_symlink_name }}/bin/shutdown.sh
           Restart=on-failure
 
           [Install]
@@ -120,12 +144,23 @@
 
     - name: Enable and start Tomcat service
       ansible.builtin.systemd:
-        name: tomcat
+        name: "{{ tomcat_service_name }}"
         enabled: yes
         state: started
 
+    - name: Wait for tomcat port {{ tomcat_port }} open
+      wait_for:
+        host: 127.0.0.1   # Target node's IP (host refers by default to target node)
+        port: "{{ tomcat_port }}"
+        delay: 15
+        timeout: 100
+
+    - name: Confirm Tomcat port {{ tomcat_port }} is reachable
+      debug:
+        msg: "✅ {{ tomcat_port }} is ready on {{ inventory_hostname }}"
+
     - name: Verify Tomcat is running
-      ansible.builtin.command: "systemctl is-active tomcat"
+      ansible.builtin.command: "systemctl is-active {{ tomcat_service_name }}"
       register: tomcat_status
       changed_when: false
       failed_when: tomcat_status.stdout != "active"
