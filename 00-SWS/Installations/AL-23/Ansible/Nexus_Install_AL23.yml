@@ -1,0 +1,165 @@
+# This Playbook will install Nexus on Amazon linux 2023
+---
+- hosts: all  #localhost
+  # connection: local
+  vars:
+    java_version: 17
+    nexus_version: "3.86.2-01"
+    java_package: "java-{{ java_version }}-amazon-corretto-devel"
+
+    nexus_url: "https://download.sonatype.com/nexus/3/nexus-{{ nexus_version }}-linux-x86_64.tar.gz"
+    nexus_tar_package: "nexus-{{ nexus_version }}-linux-x86_64.tar.gz"
+    nexus_download_dir: "/tmp"
+    nexus_install_dir: "/opt/nexus"
+    nexus_extracted_dir: "nexus-{{ nexus_version }}"
+    nexus_symlink_name: "nexus"
+    nexus_service_name: "nexus"
+    nexus_user: "nexus"
+    nexus_group: "nexus"
+    nexus_port: 8081
+
+  become: yes
+  tasks:
+    
+    - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
+      wait_for:
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+        port: 22
+        state: started
+        timeout: 120         # max wait 2 minutes per attempt
+        delay: 10            # wait 10s before the first try
+      delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
+      register: ssh_check
+      retries: 5             # retry 5 times if the task fails
+      delay: 15              # wait 15s between retries
+      until: ssh_check is succeeded
+
+    - name: Confirm SSH is reachable
+      debug:
+        msg: "✅ SSH is ready on {{ inventory_hostname }}"
+
+    - name: Ensure system packages are up to date
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+      
+    - name: Install Java-{{ java_version }}
+      ansible.builtin.dnf:
+        name: "{{ java_package }}"
+        state: present
+      
+    - name: Download Nexus
+      get_url:
+        url: "{{ nexus_url }}"
+        dest: "{{ nexus_download_dir }}"
+      register: download_result
+
+    - name: Create nexus install directory
+      ansible.builtin.file:
+        path: "{{ nexus_install_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Untar Nexus Installer
+      unarchive:
+        src: "{{ nexus_download_dir }}/{{ nexus_tar_package }}"
+        dest: "{{ nexus_install_dir }}"
+        remote_src: yes
+        creates: "{{ nexus_install_dir }}/{{ nexus_extracted_dir }}"
+
+    - name: Create nexus group
+      ansible.builtin.group:
+        name: "{{ nexus_group }}"
+        state: present
+
+    - name: Create nexus system user
+      ansible.builtin.user:
+        name: "{{ nexus_user }}"
+        group: "{{ nexus_group }}"
+        shell: /bin/false
+        system: yes
+        create_home: no
+
+    - name: Configure nexus to run as {{ nexus_user }} user
+      lineinfile:
+        path: "{{ nexus_install_dir }}/{{ nexus_extracted_dir }}/bin/nexus.rc"
+        regexp: '^#run_as_user=""'
+        line: run_as_user="{{ nexus_user }}"
+      #become_user: nexus
+
+    - name: Create symlink for current nexus version
+      file:
+        src: "{{ nexus_install_dir }}/{{ nexus_extracted_dir }}"
+        dest: "{{ nexus_install_dir }}/{{ nexus_symlink_name }}"
+        state: link
+        force: yes
+
+    - name: Ensure nexus user owns nexus installation
+      ansible.builtin.file:
+        path: "{{ nexus_install_dir }}"
+        state: directory
+        recurse: yes
+        owner: "{{ nexus_user }}"
+        group: "{{ nexus_group }}"
+        mode: "0755"
+
+    - name: Create systemd service file for nexus
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/{{ nexus_service_name }}.service
+        owner: root
+        group: root
+        mode: "0644"
+
+        content: |
+          [Unit]
+          Description=nexus service
+          After=network.target
+
+          [Service]
+          User={{ nexus_user }}
+          Group={{ nexus_group }}
+          Type=forking
+
+          ExecStart={{ nexus_install_dir }}/{{ nexus_symlink_name }}/bin/nexus start
+          ExecStop={{ nexus_install_dir }}/{{ nexus_symlink_name }}/bin/nexus stop
+          LimitNOFILE=65536
+          LimitNPROC=4096
+
+          Restart=on-abort
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Nexus service
+      ansible.builtin.systemd:
+        name: "{{ nexus_service_name }}"
+        enabled: yes
+        state: started
+        #daemon_reload: yes
+
+    - name: Wait for nexus port {{ nexus_port }} open
+      wait_for:
+        host: 127.0.0.1   # Target node's IP (host refers by default to target node)
+        port: {{ nexus_port }}
+        delay: 15
+        timeout: 100
+
+    - name: Confirm nexus port {{ nexus_port }} is reachable
+      debug:
+        msg: "✅ Nexus port 8081 is ready on {{ inventory_hostname }}"
+           
+    - name: Verify Nexus is running
+      ansible.builtin.command: "systemctl is-active nexus"
+      register: nexus_status
+      changed_when: false
+      failed_when: nexus_status.stdout != "active"
+
+    - name: Show Nexus status
+      ansible.builtin.debug:
+        msg: "Nexus is {{ nexus_status.stdout_lines }}"
+      

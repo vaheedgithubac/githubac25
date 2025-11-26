@@ -1,0 +1,165 @@
+# This Playbook will install Sonarqube on Amazon linux 2023
+---
+- hosts: all  #localhost
+  # connection: local
+  vars:
+    java_version: 17
+    sonarqube_version: "25.11.0.114957"   # Change to desired version
+    
+    java_package: "java-{{ java_version }}-amazon-corretto-devel"
+    sonarqube_url: "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-{{ sonarqube_version }}.zip"
+    sonarqube_zip_package: "sonarqube-{{ sonarqube_version }}.zip" 
+    sonarqube_download_dir: "/tmp"
+    sonarqube_install_dir: "/opt/sonarqube"
+    sonarqube_extracted_dir: "sonarqube-{{ sonarqube_version }}"
+    sonarqube_symlink_name: "sonarqube"
+    sonarqube_service_name: "sonarqube"
+    sonarqube_user: sonarqube
+    sonarqube_group: sonarqube
+    sonarqube_port: 9000
+    
+  become: yes
+  tasks:
+    
+    - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
+      wait_for:
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+        port: 22
+        state: started
+        timeout: 120         # max wait 2 minutes per attempt
+        delay: 10            # wait 10s before the first try
+      delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
+      register: ssh_check
+      retries: 5             # retry 5 times if the task fails
+      delay: 15              # wait 15s between retries
+      until: ssh_check is succeeded
+
+    - name: Confirm SSH is reachable
+      debug:
+        msg: "✅ SSH is ready on {{ inventory_hostname }}"
+
+    - name: Ensure system packages are up to date
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Install required packages
+      dnf:
+        name:
+          - "{{ java_package }}"
+          - unzip
+          - wget
+          - git
+          - shadow-utils
+          - sudo
+        state: present
+        update_cache: yes
+
+    - name: Create SonarQube group
+      group:
+        name: "{{ sonarqube_group }}"
+        state: present
+
+    - name: Create SonarQube user
+      user:
+        name: "{{ sonarqube_user }}"
+        group: "{{ sonarqube_group }}"
+        create_home: no
+        shell: /bin/false
+        system: yes
+        state: present
+
+    - name: Download SonarQube
+      get_url:
+        url: "{{ sonarqube_url }}"
+        dest: "{{ sonarqube_download_dir }}"
+        mode: '0644'
+      register: download_result
+
+    - name: Create SonarQube installation directory
+      file:
+        path: "{{ sonarqube_install_dir }}"
+        state: directory
+        owner: "{{ sonarqube_user }}"
+        group: "{{ sonarqube_group }}"
+        mode: '0755'
+
+    - name: Extract SonarQube
+      unarchive:
+        src: "{{ sonarqube_download_dir }}/{{ sonarqube_zip_package }}"
+        dest: "{{ sonarqube_install_dir }}"
+        remote_src: yes
+        creates: "{{ sonarqube_install_dir }}/{{ sonarqube_extracted_dir }}"
+
+    - name: Create symbolic link to current SonarQube
+      file:
+        src: "{{ sonarqube_install_dir }}/sonarqube-{{ sonarqube_version }}"
+        dest: "{{ sonarqube_install_dir }}/{{ sonarqube_symlink_name }}"
+        state: link
+        force: yes
+
+    - name: Set SonarQube ownership
+      file:
+        path: "{{ sonarqube_install_dir }}"
+        state: directory
+        owner: "{{ sonarqube_user }}"
+        group: "{{ sonarqube_group }}"
+        recurse: yes
+
+    - name: Configure SonarQube systemd service
+      copy:
+        dest: /etc/systemd/system/{{ sonarqube_service_name }}.service
+        content: |
+          [Unit]
+          Description=SonarQube service
+          After=syslog.target network.target
+
+          [Service]
+          Type=forking
+          ExecStart={{ sonarqube_install_dir }}/{{ sonarqube_symlink_name }}/bin/linux-x86-64/sonar.sh start
+          ExecStop={{ sonarqube_install_dir }}/{{ sonarqube_symlink_name }}/bin/linux-x86-64/sonar.sh stop
+          User={{ sonarqube_user }}
+          Group={{ sonarqube_group }}
+          Restart=always
+          LimitNOFILE=65536
+          LimitNPROC=4096
+          TimeoutSec=5
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Ensure SonarQube service is started
+      systemd:
+        name: "{{ sonarqube_service_name }}"
+        state: started
+        enabled: yes
+        #daemon_reload: yes
+
+    - name: Wait for SonarQube port {{ sonarqube_port }} to be ready
+      wait_for:
+        host: 127.0.0.1        # Target node's IP (host refers by default to target node)
+        delay: 5
+        port: "{{ sonarqube_port }}"
+        state: started
+        timeout: 60
+
+    - name: Confirm Sonarqube port {{ sonarqube_port }} is reachable
+      debug:
+        msg: "✅ SonarQube port {{ sonarqube_port }} is ready on {{ inventory_hostname }}"
+           
+    - name: Verify SonarQube is running
+      ansible.builtin.command: "systemctl is-active {{ sonarqube_service_name }}"
+      register: sonar_status
+      changed_when: false
+      failed_when: sonar_status.stdout != "active"
+
+    - name: Show SonarQube status
+      ansible.builtin.debug:
+        msg: "SonarQube is {{ sonar_status.stdout_lines }}"
+
+  
