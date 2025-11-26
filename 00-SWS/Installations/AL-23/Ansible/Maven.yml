@@ -5,20 +5,33 @@
   vars:
     java_version: "1.8.0"
     maven_version: "3.9.11"
-    maven_install_dir: "/opt/maven"
+
+    java_package: "java-{{ java_version }}-amazon-corretto-devel"
     maven_download_url: "https://dlcdn.apache.org/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
+    maven_tar_package: "apache-maven-{{ maven_version }}-bin.tar.gz"
+    maven_extracted_dir: "apache-maven-{{ maven_version }}"
+    maven_download_dir: "/tmp"
+    maven_install_dir: "/opt/maven"
+       
     ansible_python_interpreter: /usr/bin/python3
   tasks:
 
-    - name: Ensure ssh port open
+    - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
       wait_for:
+        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
         port: 22
-        delay: 10
-        timeout: 100
-        search_regex: OpenSSH
-        host: "{{ ( ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
-      vars:
-        ansible_connection: local
+        state: started
+        timeout: 120         # max wait 2 minutes per attempt
+        delay: 10            # wait 10s before the first try
+      delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
+      register: ssh_chec
+      retries: 5             # retry 5 times if the task fails
+      delay: 15              # wait 15s between retries
+      until: ssh_check is succeeded
+
+    - name: Confirm SSH is reachable
+      debug:
+        msg: "✅ SSH is ready on {{ inventory_hostname }}"
 
     - name: Ensure system packages are up to date
       ansible.builtin.dnf:
@@ -31,14 +44,14 @@
         name:
           - wget
           - tar
-          - "java-{{ java_version }}-amazon-corretto-devel"
+          - "{{ java_package }}"
         state: present
         update_cache: yes
 
     - name: Download Apache Maven tarball
       ansible.builtin.get_url:
         url: "{{ maven_download_url }}"
-        dest: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+        dest: "{{ maven_download_dir }}"
         mode: "0644"
         force: yes
 
@@ -50,17 +63,17 @@
 
     - name: Extract Maven tarball
       ansible.builtin.unarchive:
-        src: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+        src: "{{ maven_download_dir }}/{{ maven_tar_package }}"
         dest: "{{ maven_install_dir }}"
         remote_src: yes
-        creates: "{{ maven_install_dir }}/apache-maven-{{ maven_version }}"
+        creates: "{{ maven_install_dir }}/{{ maven_extracted_dir }}"
 
     - name: Set Maven environment variables
       ansible.builtin.copy:
         dest: /etc/profile.d/maven.sh
         content: |
-          export M2_HOME={{ maven_install_dir }}/apache-maven-{{ maven_version }}
-          export PATH=$M2_HOME/bin:$PATH
+          export M2_HOME={{ maven_install_dir }}/{{ maven_extracted_dir }}
+          export PATH=$PATH:$M2_HOME/bin
         mode: "0755"
 
     # - name: Add Maven to PATH
@@ -71,13 +84,16 @@
     #     mode: '0755'
 
     - name: Ensure Maven is available
-      ansible.builtin.shell: source /etc/profile.d/maven.sh && mvn -version
-      register: maven_version_check
-      changed_when: false
-
+      ansible.builtin.shell: source /etc/profile.d/maven.sh
+      
     - name: Reconnect to server session
       meta: reset_connection
 
+    - name: Check maven version
+      ansible.builtin.command: mvn -version
+      register: maven_version_check
+      changed_when: false
+
     - name: Show installed Maven version
       ansible.builtin.debug:
-        msg: "{{ maven_version_check.stdout }}"
+        msg: "{{ maven_version_check.stdout_lines }}"
