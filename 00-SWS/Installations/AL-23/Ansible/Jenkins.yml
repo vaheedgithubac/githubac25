@@ -13,7 +13,7 @@
 
   become: true
   tasks:
-    
+
     - name: Wait for SSH port 22 to be open on target host from Ansible Control Node
       wait_for:
         host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
@@ -22,10 +22,10 @@
         timeout: 120         # max wait 2 minutes per attempt
         delay: 10            # wait 10s before the first try
       delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
-      register: ssh_chec
+      register: ssh_check
       retries: 5             # retry 5 times if the task fails
       delay: 15              # wait 15s between retries
-      until: ssh_check is succeeded
+      until: ssh_check is succeeded   #success
 
     - name: Confirm SSH is reachable
       debug:
@@ -41,26 +41,26 @@
       get_url:
         url: "{{ jenkins_repo_url }}"
         dest: "{{yum_repos_dest}}/{{ jenkins_package_name }}.repo"
-      
+
     - name: Import Jenkins-CI key
       shell: rpm --import {{ jenkins_ci_key_url }}
-      
+
     - name: Install Java
       yum:
         name: "{{ java_package }}"
         state: present
-      
+
     - name: Install Jenkins
       yum:
         name: "{{ jenkins_package_name }}"
         state: present
-      
+
     - name: Start Jenkins service
       service:
         name: "{{ jenkins_service_name }}"
         state: started
         enabled: yes
-      
+
     - name: Wait for Jenkins port {{ jenkins_port }} open
       wait_for:
         host: 127.0.0.1   # Target node's IP (host refers by default to target node)
@@ -80,4 +80,4 @@
 
     - name: Show Jenkins status
       ansible.builtin.debug:
-        msg: "Tomcat is {{ tomcat_status.stdout_lines }}"
+        msg: "Jenkins is  {{ jenkins_status.stdout_lines }}"
