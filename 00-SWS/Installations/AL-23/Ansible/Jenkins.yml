@@ -81,4 +81,4 @@
 
     - name: Show Jenkins status
       ansible.builtin.debug:
-        msg: "Jenkins is  {{ jenkins_status.stdout_lines }}"
+        msg: " ✅ Jenkins is  {{ jenkins_status.stdout_lines }}"
