@@ -501,6 +501,17 @@ You now have:
 ✔ Secure RBAC using AppProject roles   
 ✔ Enterprise-grade Argo CD setup   
 
+## STEP 1️⃣1️⃣ — Use Private Git Repository with Argo CD       
+✅ Method 1 — SSH Authentication (Recommended)    
+## 🔹 STEP 11.1 — Restart Argo CD Server 
+```bash
+ssh-keygen -t ed25519 -C "argocd@git"
+```
+This creates:    
+- Private key → `~/.ssh/id_ed25519`    
+- Public key → `~/.ssh/id_ed25519.pub`   
+
+
 
 
 
