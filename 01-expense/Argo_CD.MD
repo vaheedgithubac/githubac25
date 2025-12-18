@@ -197,18 +197,22 @@ spec:
       kind: "*"
 
   roles:
+    # 🔹 Frontend admin
     - name: frontend-admin
       policies:
         - p, proj:expense-project:frontend-admin, applications, *, expense/expense-*-frontend, allow
 
+    # 🔹 Backend admin
     - name: backend-admin
       policies:
         - p, proj:expense-project:backend-admin, applications, *, expense/expense-*-backend, allow
 
+    # 🔹 Database admin
     - name: database-admin
       policies:
         - p, proj:expense-project:database-admin, applications, *, expense/expense-*-database, allow
 
+    # 🔹 Expense super admin
     - name: expense-admin
       policies:
         - p, proj:expense-project:expense-admin, applications, *, expense/*, allow
@@ -381,6 +385,7 @@ kubectl get applications -n argocd
 ```
 
 Expected output (application names should match):
+
 👉 expense-dev-frontend 
 👉 expense-dev-backend 
 👉 expense-dev-database
