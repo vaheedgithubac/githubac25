@@ -42,3 +42,11 @@ expense/
 👉 You have access to a Git repository  
 👉 You have SMTP credentials to send emails  
 👉 We will configure the Argo CD Notifications controller using a **Kubernetes Secret** for email credentials  
+
+## STEP 1️⃣ — Install Argo CD Notifications Controller
+
+Install the Notifications controller in the `argocd` namespace:
+
+```bash
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/stable/manifests/install.yaml
+
