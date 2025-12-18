@@ -601,7 +601,7 @@ repoURL: git@github.com:my-org/my-repo.git
 Argo CD automatically uses stored credentials.
 
 
-🔹🔹 ## Bonus: Namespace (protected)
+## 🔹🔹 Bonus: Namespace (protected)
 ```yaml
 apiVersion: v1
 kind: Namespace
