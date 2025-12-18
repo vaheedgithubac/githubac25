@@ -476,15 +476,15 @@ argocd app list
 ```
 Expected behavior:   
 👉 `expense-frontend-user`    
-    ✅ Can manage `expense-*-frontend`      
+    ✔ Can manage `expense-*-frontend`      
     ❌ Cannot access backend or database apps     
 
 👉 `expense-backend-user`   
-    ✅ Can manage `expense-*-backend`    
+    ✔ Can manage `expense-*-backend`    
     ❌ Cannot access frontend or database apps   
 
 👉 `expense-admin`   
-    ✅ Full access to all Expense applications    
+    ✔ Full access to all Expense applications    
 
 ## 🔐 Final Access Summary      
 
