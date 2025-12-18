@@ -327,6 +327,7 @@ type: application
 ```
 ### Other Components
 Other components follow a similar Helm chart structure:
+
 👉 `expense-backend/helm/Chart.yaml`  
 👉 `expense-database/helm/Chart.yaml`
 
