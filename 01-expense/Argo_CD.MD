@@ -399,7 +399,7 @@ Expected output (application names should match):
 
 ## STEP 🔟 — Create Users and Assign Roles in Argo CD (RBAC)
 Argo CD user access is controlled using **RBAC**, configured via:
-. `argocd-cm` → Defines users  
+**.** `argocd-cm` → Defines users  
 . `argocd-rbac-cm` → Maps users to roles
 
 
