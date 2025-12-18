@@ -222,7 +222,7 @@ kubectl apply -f AppProject.yml
 
 Create an **ApplicationSet** to deploy all Expense microservice components (frontend, backend, database) per environment, with **component-specific notifications** and **sync waves**:
 
-`ApplicationSet`
+`ApplicationSet.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -290,6 +290,28 @@ spec:
           - ServerSideApply=true
           - PruneLast=true
 ```
+Apply the ApplicationSet:
+```bash
+kubectl apply -f expense-applicationset.yaml
+```
+
+---
+
+### 👉 Explanation
+
+👉 `matrix generator` → Combines **environments** (dev, stage, prod) with **Git directories** per component.  
+👉 `name: expense-{{env}}-{{path.basename}}` → Generates application names like `expense-dev-frontend`.  
+👉 `argocd.argoproj.io/sync-wave` → Ensures **database deploys first (0)**, then **backend (1)**, then **frontend (2)**.  
+👉 `notifications.argoproj.io/subscribe.*.email` → Sends **component-specific email notifications**.  
+👉 `syncPolicy` → Automates sync, self-heals, prunes resources not in Git.  
+👉 `destination.namespace` → Creates environment-specific namespaces dynamically (`expense-dev`).  
+
+👉 `metadata.annotations` → Component-specific notifications  
+👉 `source.path` → Points to the Helm chart folder  
+👉 `destination.namespace` → Isolated namespace per component  
+👉 `syncPolicy` → Auto-sync, self-heal, auto-create namespace
+
+
 
 
 
