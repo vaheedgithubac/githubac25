@@ -404,7 +404,7 @@ Argo CD user access is controlled using **RBAC**, configured via: following **Co
 - `argocd-cm` → Defines users  
 - `argocd-rbac-cm` → Maps users to roles
 
-## 🔹 STEP 10.1 — Create Users (argocd-cm)
+## 🔹 STEP 10.1 — Create Users `(argocd-cm)`
 
 Edit or create the ConfigMap `argocd-cm` in the `argocd` namespace
 
@@ -435,7 +435,7 @@ argocd account update-password --account expense-admin
 ```
 👉 You will be prompted to enter passwords interactively.   
 
-## 🔹 STEP 10.3 — Map Users to Project Roles (argocd-rbac-cm)  
+## 🔹 STEP 10.3 — Map Users to Project Roles `(argocd-rbac-cm)`  
 Now bind users to the AppProject roles you already created `(expense-project)`.   
 Create or update `argocd-rbac-cm`:
 ```yml
