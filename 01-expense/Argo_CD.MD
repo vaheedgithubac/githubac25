@@ -369,11 +369,12 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ```
 ## Explanation
 
-👉 Apply AppProject.yml → Creates the Argo CD project for Expense microservice 
-👉 Apply ApplicationSet.yml → Deploys frontend, backend, and database applications per environment 
-👉 Apply argocd-notifications-cm.yaml → Configures notification templates and triggers 
-👉 Apply argocd-notifications-secret.yaml → Provides SMTP credentials securely 
-👉 Restart argocd-notifications-controller → Ensures the controller picks up the new Secret and ConfigMap
+👉 Apply `AppProject.yml` → Creates the Argo CD project for Expense microservice  
+👉 Apply `ApplicationSet.yml` → Deploys frontend, backend, and database applications per environment  
+👉 Apply `argocd-notifications-cm.yaml` → Configures notification templates and triggers  
+👉 Apply `argocd-notifications-secret.yaml` → Provides SMTP credentials securely  
+👉 Restart `argocd-notifications-controller` → Ensures the controller picks up the new Secret and ConfigMap
+
 
 Check Applications: 
 ```bash
