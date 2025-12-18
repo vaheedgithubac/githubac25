@@ -502,7 +502,7 @@ You now have:
 ✔ Enterprise-grade Argo CD setup   
 
 ## STEP 1️⃣1️⃣ — Use Private Git Repository with Argo CD       
-✅ Method 1 — SSH Authentication (Recommended)    
+✅ **Method 1 — SSH Authentication (Recommended)**   
 ## 🔹 STEP 11.1.1 — Generate SSH Key (if you don’t have one) 
 ```bash
 ssh-keygen -t ed25519 -C "argocd@git"
@@ -546,7 +546,7 @@ git   git@github.com:my-org/my-repo.git   Successful
 👉 Works with GitHub, GitLab, Bitbucket   
 👉 Secure and production-proven   
 
-✅ Method 2 — HTTPS Authentication (Username + Token)   
+✅ **Method 2 — HTTPS Authentication (Username + Token)**   
 ## 🔹 STEP 11.2.1 —— Create a Git Token   
 Example: GitHub
 - Settings → Developer settings → Personal access tokens
