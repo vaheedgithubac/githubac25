@@ -503,13 +503,48 @@ You now have:
 
 ## STEP 1️⃣1️⃣ — Use Private Git Repository with Argo CD       
 ✅ Method 1 — SSH Authentication (Recommended)    
-## 🔹 STEP 11.1 — Restart Argo CD Server 
+## 🔹 STEP 11.1 — Generate SSH Key (if you don’t have one) 
 ```bash
 ssh-keygen -t ed25519 -C "argocd@git"
 ```
 This creates:    
 - Private key → `~/.ssh/id_ed25519`    
-- Public key → `~/.ssh/id_ed25519.pub`   
+- Public key → `~/.ssh/id_ed25519.pub`
+
+## STEP 11.2 — Add Public Key to Git Provider
+Example: GitHub   
+
+1. Go to Repo → Settings → Deploy keys   
+2. Click Add deploy key    
+3. Paste contents of id_ed25519.pub    
+4. Enable Read-only access   
+5. Save    
+👉 This allows Argo CD to read the repo securely.   
+
+## 🔹 STEP 11.3 — Add Private Repo to Argo CD   
+Use the Argo CD CLI:   
+```bash
+argocd repo add git@github.com:my-org/my-repo.git \
+  --ssh-private-key-path ~/.ssh/id_ed25519
+```
+✔ Argo CD stores the key securely as a Kubernetes Secret   
+✔ No plaintext passwords in Git   
+✔ Works with Application & ApplicationSet   
+
+## 🔹 STEP 11.4 — Verify Repository Access  
+```bash
+argocd repo list
+```
+Expected:   
+```text
+TYPE  NAME                             STATUS
+git   git@github.com:my-org/my-repo.git Successful
+```
+- Why SSH is Best   
+👉 No passwords stored   
+👉 Read-only deploy keys   
+👉 Works with GitHub, GitLab, Bitbucket   
+👉 Secure and production-proven   
 
 
 
