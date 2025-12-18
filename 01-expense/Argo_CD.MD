@@ -57,5 +57,22 @@ kubectl get pods -n argocd
 NAME                                   READY   STATUS    RESTARTS   AGE
 argocd-notifications-controller-xxxxx  1/1     Running   0          1m
 ```
+## STEP 2️⃣ — Create Secret for Email
+
+We don’t store passwords in plain ConfigMaps. Let’s create a **Kubernetes Secret** for Argo CD Notifications:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+  namespace: argocd
+stringData:
+  smtp-host: smtp.example.com
+  smtp-port: "587"
+  smtp-from: argocd@example.com
+  smtp-username: argocd@example.com
+  smtp-password: examplepassword
+```
 
 
