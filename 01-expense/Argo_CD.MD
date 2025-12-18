@@ -174,7 +174,7 @@ Create an **AppProject** in Argo CD in `argocd` namespace to group and manage al
 `AppProject.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
-kind: AppProject
+kind: AppProject   # This will be used to group 'Applications' under this Project
 metadata:
   name: expense-project
   namespace: argocd
