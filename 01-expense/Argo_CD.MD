@@ -334,8 +334,8 @@ type: application
 
 Other components follow a similar Helm chart structure:
 
-👉 `expense-backend/helm/Chart.yaml`  
-👉 `expense-database/helm/Chart.yaml`
+👉 `backend/helm/Chart.yaml`  
+👉 `database/helm/Chart.yaml`
 
 `expense-frontend/helm/values.yml`
 ```yaml
@@ -349,8 +349,8 @@ service:
 ```
 Other components follow a similar Helm chart structure:
 
-👉 `expense-backend/helm/values.yaml`  
-👉 `expense-database/helm/values.yaml`
+👉 `backend/helm/values.yaml`  
+👉 `database/helm/values.yaml`
 
 templates/deployment.yaml & service.yaml → standard Kubernetes manifests
 Repeat for backend and database. Database chart includes pvc.yaml.
