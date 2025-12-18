@@ -199,19 +199,19 @@ spec:
   roles:
     - name: frontend-admin
       policies:
-        - p, proj:expense:frontend-admin, applications, *, expense/expense-*-frontend, allow
+        - p, proj:expense-project:frontend-admin, applications, *, expense/expense-*-frontend, allow
 
     - name: backend-admin
       policies:
-        - p, proj:expense:backend-admin, applications, *, expense/expense-*-backend, allow
+        - p, proj:expense-project:backend-admin, applications, *, expense/expense-*-backend, allow
 
     - name: database-admin
       policies:
-        - p, proj:expense:database-admin, applications, *, expense/expense-*-database, allow
+        - p, proj:expense-project:database-admin, applications, *, expense/expense-*-database, allow
 
     - name: expense-admin
       policies:
-        - p, proj:expense:expense-admin, applications, *, expense/*, allow
+        - p, proj:expense-project:expense-admin, applications, *, expense/*, allow
 ```
 ### Explanation
 
