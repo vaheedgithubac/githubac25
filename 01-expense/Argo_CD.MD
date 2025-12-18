@@ -404,6 +404,29 @@ Argo CD user access is controlled using **RBAC**, configured via:
 - `argocd-cm` → Defines users  
 - `argocd-rbac-cm` → Maps users to roles
 
+## 🔹 STEP 10.1 — Create Users (argocd-cm)
+
+Edit or create the ConfigMap `argocd-cm` in the `argocd` namespace
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  accounts.expense-frontend-user: login
+  accounts.expense-backend-user: login
+  accounts.expense-admin: login
+```
+
+## Explanation
+👉 `accounts.<username>: login` → Creates a local Argo CD user
+👉 These users can authenticate via username/password
+👉 Passwords will be set separately (next step)
+
+
+
 
 
 
