@@ -385,6 +385,7 @@ kubectl get applications -n argocd
 ```
 
 Expected output (application names should match):
+
 👉 expense-dev-frontend           
 👉 expense-dev-backend          
 👉 expense-dev-database          
