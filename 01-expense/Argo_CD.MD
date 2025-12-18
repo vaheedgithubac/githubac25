@@ -13,30 +13,30 @@ expense/
         └── dev/
             ├── frontend/
             │   └── helm/
-            │       ├── Chart.yaml
+            │       ├── Chart.yml
             │       ├── values.yml
             │       └── templates/
-            │           ├── deployment.yaml
-            │           └── service.yaml
+            │           ├── deployment.yml
+            │           └── service.yml
             ├── backend/
             │   └── helm/
             │       ├── Chart.yaml
             │       ├── values.yml
             │       └── templates/
-            │           ├── deployment.yaml
-            │           └── service.yaml
+            │           ├── deployment.yml
+            │           └── service.yml
             └── database/
                 └── helm/
                     ├── Chart.yaml
                     ├── values.yml
                     └── templates/
-                        ├── deployment.yaml
-                        ├── service.yaml
-                        └── pvc.yaml
+                        ├── deployment.yml
+                        ├── service.yml
+                        └── pvc.yml
 ```
 #### Explanation
 
-👉 `Chart.yaml` → Defines the Helm chart metadata (name, version, type, appVersion)  
+👉 `Chart.yml` → Defines the Helm chart metadata (name, version, type, appVersion)  
 👉 `values.yml` → Stores component-specific configurable values  
 👉 `templates/` → Contains Kubernetes manifests (Deployment, Service, PVC)  
 👉 Each component has its own Helm chart, allowing isolated deployments and ApplicationSet mapping
@@ -67,7 +67,7 @@ argocd-notifications-controller-xxxxx  1/1     Running   0          1m
 ## STEP 2️⃣ — Create Secret for Email
 
 We don’t store passwords in plain ConfigMaps. Let’s create a **Kubernetes Secret** for Argo CD Notifications in `argocd` namespace:
-
+`argocd-notifications-secret.yml`
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -83,13 +83,13 @@ stringData:
 ```
 Apply it:
 ```bash
-kubectl apply -f argocd-notifications-secret.yaml
+kubectl apply -f argocd-notifications-secret.yml
 ```
 
 ## STEP 3️⃣ — Create ConfigMap for Notifications Controller
 
 Create a **ConfigMap** to configure notification templates and triggers for Argo CD:
-
+`argocd-notifications-cm.yaml`
 ```yaml
 apiVersion: v1
 kind: ConfigMap
