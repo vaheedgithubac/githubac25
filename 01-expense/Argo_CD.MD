@@ -35,5 +35,6 @@ expense/
 👉 Argo CD is installed in the `argocd` namespace  
 👉 You have access to a Git repository  
 👉 You have SMTP credentials to send emails  
-👉 We will configure the Argo CD Notifications controller using a **Kubernetes Secret** for email credentials  
+👉 We will configure the Argo CD Notifications controller using a **Kubernetes Secret** for email credentials
+
 
