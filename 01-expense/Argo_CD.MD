@@ -397,6 +397,9 @@ Expected output (application names should match):
 👉 Argo CD ApplicationSet auto-syncs the updated component  
 👉 Notifications controller sends email **only for that component**, using `on-deployed`, `on-sync-failed`, and `on-health-degraded` triggers
 
+## STEP 🔟 — Create Users and Assign Roles in Argo CD (RBAC)
+Argo CD user access is controlled using **RBAC**, configured via:
+
 
 
 
