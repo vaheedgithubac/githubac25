@@ -79,4 +79,49 @@ Apply it:
 kubectl apply -f argocd-notifications-secret.yaml
 ```
 
+## STEP 3️⃣ — Create ConfigMap for Notifications Controller
+
+Create a **ConfigMap** to configure notification templates and triggers for Argo CD:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.email: |
+    host: $smtp-host
+    port: $smtp-port
+    from: $smtp-from
+    username: $smtp-username
+    password: $smtp-password
+
+  # Notification templates
+  template.app-deployed: |
+    message: "Application {{.app.metadata.name}} deployed successfully"
+    subject: "[ArgoCD] {{.app.metadata.name}} Deployed"
+
+  template.app-health-degraded: |
+    message: "Application {{.app.metadata.name}} is degraded"
+    subject: "[ArgoCD] {{.app.metadata.name}} Health Degraded"
+
+  template.app-sync-failed: |
+    message: "Application {{.app.metadata.name}} sync failed"
+    subject: "[ArgoCD] {{.app.metadata.name}} Sync Failed"
+
+  # Notification triggers
+  trigger.on-deployed: |
+    - description: Application successfully deployed
+    - send: [app-deployed]
+
+  trigger.on-health-degraded: |
+    - description: Application degraded
+    - send: [app-health-degraded]
+
+  trigger.on-sync-failed: |
+    - description: Application sync failed
+    - send: [app-sync-failed]
+
+
 
