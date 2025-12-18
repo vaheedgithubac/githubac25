@@ -217,7 +217,7 @@ spec:
 
 👉 `clusterResourceWhitelist` → Allows Helm charts to deploy ClusterRole, CRDs, etc.  
 👉 `namespaceResourceWhitelist` → Allows namespace-level objects  
-👉 `destinations` → Only "expense-*" namespace (or matching `expense-*`) is allowed
+👉 `destinations` → Matching "expense-*" is allowed
 
 Apply the yaml file
 ```bash
