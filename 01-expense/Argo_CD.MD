@@ -34,7 +34,7 @@ expense/
                         ├── service.yaml
                         └── pvc.yaml
 ```
-### Explanation
+## Explanation
 
 👉 Chart.yaml → Defines the Helm chart metadata (name, version, type, appVersion)
 👉 values.yml → Stores component-specific configurable values
