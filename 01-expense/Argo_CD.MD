@@ -155,6 +155,11 @@ kubectl patch deployment argocd-notifications-controller -n argocd --patch '{
   }
 }'
 ```
+Now restart the controller: 
+```bash
+kubectl rollout restart deployment argocd-notifications-controller -n argocd
+```
+✅ Now Notifications controller can read SMTP credentials securely.
 
 
 
