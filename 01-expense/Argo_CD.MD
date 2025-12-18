@@ -463,7 +463,14 @@ data:
 👉 `policy.default`: role:readonly → Safe default access   
 👉 `g, user, role` → Assigns a user to a role   
 👉 Roles are **project-scoped**, not global   
-👉 Access is limited to **only allowed applications**   
+👉 Access is limited to **only allowed applications**  
+```bash
+argocd account get-user-info
+
+Logged In: true
+Roles: <role>   # admin
+```
+
 
 ## 🔹 STEP 10.4 — Restart Argo CD Server  
 RBAC changes require restarting the Argo CD server.   
