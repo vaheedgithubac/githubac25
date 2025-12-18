@@ -435,6 +435,66 @@ argocd account update-password --account expense-admin
 ```
 👉 You will be prompted to enter passwords interactively.   
 
+## 🔹 STEP 10.3 — Map Users to Project Roles (argocd-rbac-cm)  
+Now bind users to the AppProject roles you already created `(expense-project)`.   
+Create or update `argocd-rbac-cm`:
+```yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.default: role:readonly
+
+  policy.csv: |
+    # Expense Frontend user
+    g, expense-frontend-user, proj:expense-project:expense-frontend-admin
+
+    # Expense Backend user
+    g, expense-backend-user, proj:expense-project:expense-backend-admin
+
+    # Expense admin (full access)
+    g, expense-admin, proj:expense-project:expense-admin
+```
+## Explanation
+👉 `policy.default`: role:readonly → Safe default access   
+👉 `g, user, role` → Assigns a user to a role   
+👉 Roles are **project-scoped**, not global   
+👉 Access is limited to **only allowed applications**   
+
+## 🔹 STEP 10.4 — Restart Argo CD Server  
+RBAC changes require restarting the Argo CD server.   
+```bash
+kubectl rollout restart deployment argocd-server -n argocd   
+```
+## 🔹 STEP 10.5 — Validate Access
+Login as frontend user   
+```bash
+argocd login <ARGOCD_SERVER>   
+argocd app list   
+```
+Expected behavior:   
+👉 `expense-frontend-user`
+    ✅ Can manage `expense-*-frontend`   
+  ❌ Cannot access backend or database apps   
+
+👉 `expense-backend-user`
+    ✅ Can manage `expense-*-backend`
+    ❌ Cannot access frontend or database apps
+
+👉 `expense-admin`
+    ✅ Full access to all Expense applications 
+
+## 🔐 Final Access Summary   
+
+| User                  | Role                   | Access Scope        |   
+| --------------------- | ---------------------- | ------------------- |    
+| expense-frontend-user | expense-frontend-admin | Frontend apps only  |   
+| expense-backend-user  | expense-backend-admin  | Backend apps only   |   
+| expense-admin         | expense-admin          | Full Expense access |   
+
+
 
 
 
