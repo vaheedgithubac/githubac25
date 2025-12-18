@@ -367,6 +367,31 @@ kubectl apply -f argocd-notifications-cm.yaml
 kubectl apply -f argocd-notifications-secret.yaml
 kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ```
+## Explanation
+
+👉 Apply AppProject.yml → Creates the Argo CD project for Expense microservice 
+👉 Apply ApplicationSet.yml → Deploys frontend, backend, and database applications per environment 
+👉 Apply argocd-notifications-cm.yaml → Configures notification templates and triggers 
+👉 Apply argocd-notifications-secret.yaml → Provides SMTP credentials securely 
+👉 Restart argocd-notifications-controller → Ensures the controller picks up the new Secret and ConfigMap
+
+Check Applications: 
+```bash
+kubectl get applications -n argocd
+```
+
+Expected output (application names should match):
+👉 expense-dev-frontend 
+👉 expense-dev-backend 
+👉 expense-dev-database
+
+## STEP 9️⃣ — Testing
+
+👉 Change `values.yml` (e.g., image tag) for any component  
+👉 Push changes to Git  
+👉 Argo CD ApplicationSet auto-syncs the updated component  
+👉 Notifications controller sends email **only for that component**, using `on-deployed`, `on-sync-failed`, and `on-health-degraded` triggers
+
 
 
 
