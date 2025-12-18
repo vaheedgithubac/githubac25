@@ -164,7 +164,7 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ## STEP 5️⃣ — AppProject with ClusterResourceWhitelist
 
 Create an **AppProject** in Argo CD to group and manage all Expense microservice applications, define allowed Git repos, destinations, and roles:
-
+`AppProject.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
