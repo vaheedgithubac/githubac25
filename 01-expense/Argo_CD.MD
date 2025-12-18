@@ -503,6 +503,17 @@ Expected behavior:
 | expense-backend-user  | expense-backend-admin  | Backend apps only   |   
 | expense-admin         | expense-admin          | Full Expense access |   
 
+## To know currently loggedin user info:
+```bash
+argocd account get-user-info
+```
+```text
+Logged In: true
+Username: admin
+Roles: admin
+Groups: 
+```
+
 ## ✅ Result   
 You now have:    
 ✔ Environment-isolated applications   
