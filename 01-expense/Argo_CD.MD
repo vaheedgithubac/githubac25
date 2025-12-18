@@ -50,12 +50,12 @@ Install the Notifications controller in the `argocd` namespace:
 ```bash
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/stable/manifests/install.yaml
 ```
-Verify Notifications Controller
 Check that the Notifications controller pods are running:
-
 ```bash
 kubectl get pods -n argocd
+
 NAME                                   READY   STATUS    RESTARTS   AGE
 argocd-notifications-controller-xxxxx  1/1     Running   0          1m
+```
 
 
