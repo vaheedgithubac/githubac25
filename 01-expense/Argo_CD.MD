@@ -129,11 +129,32 @@ Apply the ConfigMap:
 kubectl apply -f argocd-notifications-cm.yaml
 ```
 ### Explanation
-
 👉 `service.email` → Uses environment variables from the Secret  
 👉 `template.*` → Defines email subject & body  
 👉 `trigger.*` → Maps Argo CD events to templates  
 👉 Now `on-sync-failed` exists and matches ApplicationSet annotations
+
+## STEP 4️⃣ — Link ConfigMap with Secret
+
+The Notifications controller automatically resolves environment variables from Secrets if properly mounted.  
+You may need to patch the Deployment to ensure it reads from the Secret:
+
+```bash
+kubectl patch deployment argocd-notifications-controller -n argocd --patch '{
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [{
+          "name": "argocd-notifications-controller",
+          "envFrom": [{
+            "secretRef": { "name": "argocd-notifications-secret" }
+          }]
+        }]
+      }
+    }
+  }
+}'
+```
 
 
 
