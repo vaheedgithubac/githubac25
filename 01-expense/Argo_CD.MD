@@ -74,5 +74,9 @@ stringData:
   smtp-username: argocd@example.com
   smtp-password: examplepassword
 ```
+Apply it:
+```bash
+kubectl apply -f argocd-notifications-secret.yaml
+```
 
 
