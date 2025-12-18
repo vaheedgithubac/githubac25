@@ -327,9 +327,24 @@ type: application
 ```
 
 Other components follow a similar Helm chart structure:
+
 👉 `expense-backend/helm/Chart.yaml`  
 👉 `expense-database/helm/Chart.yaml`
 
+`expense-frontend/helm/values.yml`
+```yaml
+replicaCount: 2
+image:
+  repository: my-org/expense-frontend
+  tag: "1.0.0"
+service:
+  type: ClusterIP
+  port: 80
+```
+Other components follow a similar Helm chart structure:
+
+👉 `expense-backend/helm/values.yaml`  
+👉 `expense-database/helm/values.yaml`
 
 
 
