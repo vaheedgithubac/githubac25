@@ -325,6 +325,11 @@ version: 0.1.0
 appVersion: "1.0.0"
 type: application
 ```
+### Other Components
+Other components follow a similar Helm chart structure:
+👉 `expense-backend/helm/Chart.yaml`  
+👉 `expense-database/helm/Chart.yaml`
+
 
 
 
