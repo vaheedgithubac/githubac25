@@ -421,7 +421,6 @@ data:
 ```
 
 ## Explanation
-
 👉 `accounts.<username>: login` → Creates a local Argo CD user   
 👉 These users can authenticate via username/password    
 👉 Passwords will be set separately (next step)   
