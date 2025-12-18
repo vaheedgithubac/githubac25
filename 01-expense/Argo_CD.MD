@@ -34,11 +34,13 @@ expense/
                         ├── service.yaml
                         └── pvc.yaml
 ```
-### Explanation
-👉 Chart.yaml → Defines the Helm chart metadata (name, version, type, appVersion)
-👉 values.yml → Stores component-specific configurable values
-👉 templates/ → Contains Kubernetes manifests (Deployment, Service, PVC)
+#### Explanation
+
+👉 `Chart.yaml` → Defines the Helm chart metadata (name, version, type, appVersion)  
+👉 `values.yml` → Stores component-specific configurable values  
+👉 `templates/` → Contains Kubernetes manifests (Deployment, Service, PVC)  
 👉 Each component has its own Helm chart, allowing isolated deployments and ApplicationSet mapping
+
 
 ## STEP 0️⃣ — Assumptions
 
