@@ -353,6 +353,21 @@ Other components follow a similar Helm chart structure:
 👉 `expense-backend/helm/values.yaml`  
 👉 `expense-database/helm/values.yaml`
 
+templates/deployment.yaml & service.yaml → standard Kubernetes manifests
+Repeat for backend and database. Database chart includes pvc.yaml.
+
+## STEP 8️⃣ — Apply Everything
+
+Apply all the resources to deploy the Expense microservice and configure notifications:
+
+```bash
+kubectl apply -f AppProject.yml
+kubectl apply -f ApplicationSet.yml
+kubectl apply -f argocd-notifications-cm.yaml
+kubectl apply -f argocd-notifications-secret.yaml
+kubectl rollout restart deployment argocd-notifications-controller -n argocd
+```
+
 
 
 
