@@ -40,6 +40,7 @@ expense/
 👉 values.yml → Stores component-specific configurable values
 👉 templates/ → Contains Kubernetes manifests (Deployment, Service, PVC)
 👉 Each component has its own Helm chart, allowing isolated deployments and ApplicationSet mapping
+
 ## STEP 0️⃣ — Assumptions
 
 👉 Kubernetes cluster exists  
