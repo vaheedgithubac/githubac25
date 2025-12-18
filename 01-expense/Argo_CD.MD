@@ -435,8 +435,8 @@ argocd account update-password --account expense-admin
 ```
 👉 You will be prompted to enter passwords interactively.   
 
-## 🔹 STEP 10.3 — Map Users to Project Roles `(argocd-rbac-cm)`  
-Now bind users to the AppProject roles you already created `(expense-project)`.   
+## 🔹 STEP 10.3 — Map Users to Project Roles `(argocd-rbac-cm)` 
+Now bind users to the AppProject roles you already created `(expense-project)` **in step:5**.   
 Create or update `argocd-rbac-cm`:
 ```yml
 apiVersion: v1
