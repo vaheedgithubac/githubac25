@@ -415,6 +415,8 @@ metadata:
   name: argocd-cm
   namespace: argocd
 data:
+  application.namespaces: argocd
+
   accounts.expense-frontend-user: login
   accounts.expense-backend-user: login
   accounts.expense-admin: login
