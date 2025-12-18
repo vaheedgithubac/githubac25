@@ -311,6 +311,22 @@ kubectl apply -f expense-applicationset.yaml
 👉 `destination.namespace` → Isolated namespace per component  
 👉 `syncPolicy` → Auto-sync, self-heal, auto-create namespace
 
+✅ All triggers (on-deployed, on-health-degraded, on-sync-failed) are consistent with templates in ConfigMap.
+
+## STEP 7️⃣ — Helm Charts for Each Component
+Create **Helm charts** for each component (frontend, backend, database).  
+Here’s an example for **expense-frontend**:
+
+`expense-frontend/helm/Chart.yaml'
+```yaml
+# expense-frontend/helm/Chart.yaml
+apiVersion: v2
+name: expense-frontend
+version: 0.1.0
+appVersion: "1.0.0"
+type: application
+```
+
 
 
 
