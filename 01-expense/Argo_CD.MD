@@ -128,6 +128,13 @@ Apply the ConfigMap:
 ```bash
 kubectl apply -f argocd-notifications-cm.yaml
 ```
+### Explanation
+
+👉 `service.email` → Uses environment variables from the Secret  
+👉 `template.*` → Defines email subject & body  
+👉 `trigger.*` → Maps Argo CD events to templates  
+👉 Now `on-sync-failed` exists and matches ApplicationSet annotations
+
 
 
 
