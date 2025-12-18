@@ -198,17 +198,17 @@ spec:
 
   roles:
     # 🔹 Frontend admin
-    - name: frontend-admin
+    - name: expense-frontend-admin
       policies:
         - p, proj:expense-project:frontend-admin, applications, *, expense/expense-*-frontend, allow
 
     # 🔹 Backend admin
-    - name: backend-admin
+    - name: expense-backend-admin
       policies:
         - p, proj:expense-project:backend-admin, applications, *, expense/expense-*-backend, allow
 
     # 🔹 Database admin
-    - name: database-admin
+    - name: expense-database-admin
       policies:
         - p, proj:expense-project:database-admin, applications, *, expense/expense-*-database, allow
 
