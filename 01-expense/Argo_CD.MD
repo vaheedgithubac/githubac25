@@ -610,7 +610,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false   
 ```
-`Kubernetes will not allow to delete the above namespace by 'Argo CD'` 
+Kubernetes will not allow to delete the above namespace `expense` by 'Argo CD'
 
 
 
