@@ -122,6 +122,7 @@ data:
   trigger.on-sync-failed: |
     - description: Application sync failed
     - send: [app-sync-failed]
+```
 
 Apply the ConfigMap:
 ```bash
