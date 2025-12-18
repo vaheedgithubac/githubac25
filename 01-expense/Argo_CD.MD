@@ -217,6 +217,78 @@ Apply the yaml file
 kubectl apply -f AppProject.yml
 ```
 
+## STEP 6️⃣ — ApplicationSet for Components with Notifications
+
+Create an **ApplicationSet** to deploy all Expense microservice components (frontend, backend, database) per environment, with **component-specific notifications** and **sync waves**:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: expense-applicationset
+  namespace: argocd
+spec:
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - env: dev
+                #- env: stage
+                #- env: prod
+          - git:
+              repoURL: https://github.com/my-org/my-repo.git
+              revision: main
+              directories:
+                - path: cd/argocd/{{env}}/*
+  template:
+    metadata:
+      name: expense-{{env}}-{{path.basename}}
+      namespace: argocd
+      labels:
+        env: "{{env}}"
+        project: expense
+        component: "{{path.basename}}"
+
+      annotations:
+        # 🔹 SYNC WAVES (CRITICAL)
+        argocd.argoproj.io/sync-wave: >
+          {{- if eq path.basename "database" -}}0
+          {{- else if eq path.basename "backend" -}}1
+          {{- else if eq path.basename "frontend" -}}2
+          {{- end }}
+
+        # 🔹 Notifications
+        notifications.argoproj.io/subscribe.on-deployed.email: "expense-{{env}}-{{path.basename}}@example.com"
+        notifications.argoproj.io/subscribe.on-health-degraded.email: "expense-{{env}}-{{path.basename}}@example.com"
+        notifications.argoproj.io/subscribe.on-sync-failed.email: "expense-{{env}}-{{path.basename}}@example.com"
+
+    spec:
+      project: expense-project
+
+      source:
+        repoURL: https://github.com/my-org/my-repo.git
+        targetRevision: main
+        path: "{{path}}/helm"
+        helm:
+          valueFiles:
+            - values.yml
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "expense-{{env}}"
+
+      syncPolicy:
+        automated:
+          prune: true          # delete resources not in Git
+          selfHeal: true       # revert out-of-band changes
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - ServerSideApply=true
+          - PruneLast=true
+```
+
 
 
 
