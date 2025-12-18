@@ -317,9 +317,8 @@ kubectl apply -f expense-applicationset.yaml
 Create **Helm charts** for each component (frontend, backend, database).  
 Here’s an example for **expense-frontend**:
 
-`expense-frontend/helm/Chart.yaml'
+`expense-frontend/helm/Chart.yaml`
 ```yaml
-# expense-frontend/helm/Chart.yaml
 apiVersion: v2
 name: expense-frontend
 version: 0.1.0
