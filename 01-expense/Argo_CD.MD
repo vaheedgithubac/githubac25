@@ -34,6 +34,7 @@ expense/
                         ├── service.yaml
                         └── pvc.yaml
 
+
 STEP 0️⃣ — Assumptions
 
 👉 Kubernetes cluster exists
