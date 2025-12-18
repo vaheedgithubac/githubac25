@@ -123,5 +123,10 @@ data:
     - description: Application sync failed
     - send: [app-sync-failed]
 
+Apply the ConfigMap:
+```bash
+kubectl apply -f argocd-notifications-cm.yaml
+```
+
 
 
