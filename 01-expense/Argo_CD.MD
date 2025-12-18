@@ -503,7 +503,7 @@ You now have:
 
 ## STEP 1️⃣1️⃣ — Use Private Git Repository with Argo CD       
 ✅ Method 1 — SSH Authentication (Recommended)    
-## 🔹 STEP 11.1 — Generate SSH Key (if you don’t have one) 
+## 🔹 STEP 11.1.1 — Generate SSH Key (if you don’t have one) 
 ```bash
 ssh-keygen -t ed25519 -C "argocd@git"
 ```
@@ -511,7 +511,7 @@ This creates:
 - Private key → `~/.ssh/id_ed25519`    
 - Public key → `~/.ssh/id_ed25519.pub`
 
-## STEP 11.2 — Add Public Key to Git Provider
+## STEP 11.1.2 — Add Public Key to Git Provider
 Example: GitHub   
 
 1. Go to Repo → Settings → Deploy keys   
@@ -521,7 +521,7 @@ Example: GitHub
 5. Save    
 👉 This allows Argo CD to read the repo securely.   
 
-## 🔹 STEP 11.3 — Add Private Repo to Argo CD   
+## 🔹 STEP 11.1.3 — Add Private Repo to Argo CD   
 Use the Argo CD CLI:   
 ```bash
 argocd repo add git@github.com:my-org/my-repo.git \
@@ -531,20 +531,54 @@ argocd repo add git@github.com:my-org/my-repo.git \
 ✔ No plaintext passwords in Git   
 ✔ Works with Application & ApplicationSet   
 
-## 🔹 STEP 11.4 — Verify Repository Access  
+## 🔹 STEP 11.1.4 — Verify Repository Access  
 ```bash
 argocd repo list
 ```
 Expected:   
 ```text
-TYPE  NAME                             STATUS
-git   git@github.com:my-org/my-repo.git Successful
+TYPE  NAME                                 STATUS
+git   git@github.com:my-org/my-repo.git   Successful
 ```
 - Why SSH is Best   
 👉 No passwords stored   
 👉 Read-only deploy keys   
 👉 Works with GitHub, GitLab, Bitbucket   
 👉 Secure and production-proven   
+
+✅ Method 2 — HTTPS Authentication (Username + Token)   
+## 🔹 STEP 11.2.1 —— Create a Git Token   
+Example: GitHub
+- Settings → Developer settings → Personal access tokens
+- Scope: `repo` (read-only is sufficient)
+
+## 🔹 STEP 11.2.1 —— Add Repo Using HTTPS
+```bash
+argocd repo add https://github.com/my-org/my-repo.git \
+  --username <git-username> \
+  --password <git-token>
+```  
+👉 Token is stored securely as a Secret   
+👉 Works well but **less secure than SSH**   
+
+🔐 Where Credentials Are Stored   
+Argo CD stores repo credentials as Kubernetes Secrets:   
+```bash
+kubectl get secrets -n argocd | grep repo
+```
+Example:   
+```text
+argocd-repo-creds-xxxx
+```
+👉 Secrets are **encrypted at rest** (if K8s encryption is enabled)   
+👉 Not exposed in Applications or Git   
+
+🔁 Using Private Repo with ApplicationSet
+Once the repo is added, no change is required in your manifests:
+```yaml
+repoURL: git@github.com:my-org/my-repo.git
+```
+Argo CD automatically uses stored credentials.
 
 
 
