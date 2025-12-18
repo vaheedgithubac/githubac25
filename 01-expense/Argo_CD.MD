@@ -425,6 +425,17 @@ data:
 👉 These users can authenticate via username/password    
 👉 Passwords will be set separately (next step)   
 
+## 🔹 STEP 10.2 — Set Passwords for Users  
+Use the Argo CD CLI to set passwords.  
+
+```bash
+argocd account update-password --account expense-frontend-user  
+argocd account update-password --account expense-backend-user   
+argocd account update-password --account expense-admin  
+```
+👉 You will be prompted to enter passwords interactively.   
+
+
 
 
 
