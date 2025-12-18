@@ -337,7 +337,7 @@ Other components follow a similar Helm chart structure:
 👉 `backend/helm/Chart.yaml`  
 👉 `database/helm/Chart.yaml`
 
-`expense-frontend/helm/values.yml`
+`frontend/helm/values.yml`
 ```yaml
 replicaCount: 2
 image:
