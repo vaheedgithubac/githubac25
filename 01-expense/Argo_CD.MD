@@ -601,6 +601,17 @@ repoURL: git@github.com:my-org/my-repo.git
 Argo CD automatically uses stored credentials.
 
 
+🔹🔹 ## Bonus: Namespace (protected)
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: expense
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false   
+```
+`Kubernetes will not allow to delete the above namespace by 'Argo CD'` 
+
 
 
 
