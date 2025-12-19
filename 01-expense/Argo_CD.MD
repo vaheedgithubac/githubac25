@@ -435,11 +435,13 @@ data:
   policy.default: role:readonly    # Default role for the user that is not associated with any
 
   policy.csv: |
-    # expense Dev + Stage user
+    # expense Dev role policy
     p, role:expense-dev, applications, *, expense-dev/*, allow
+
+    # expense Stage role policy
     p, role:expense-stage, applications, *, expense-stage/*, allow
 
-    # expense Prod user
+    # expense Prod role policy
     p, role:expense-prod, applications, *, expense-prod/*, allow
 
     # expense Admin (FULL)
