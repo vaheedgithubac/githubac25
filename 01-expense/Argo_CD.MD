@@ -174,7 +174,7 @@ Create an **AppProject** in `argocd` namespace to group and manage all **expense
 `AppProject.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
-kind: AppProject   # This will be used to group 'Applications' under this Project
+kind: AppProject                                # This will be used to group 'Applications' under this Project
 metadata:
   name: expense-project
   namespace: argocd
@@ -182,15 +182,15 @@ spec:
   description: Project for expense microservice
 
   sourceRepos:
-    - "https://github.com/my-org/my-repo.git"
+    - "https://github.com/my-org/my-repo.git"   # Argo CD 'Applications' which are part of this Project can only deploy from this repository
 
   destinations:
-    - namespace: "expense-*"
-      server: https://kubernetes.default.svc
+    - namespace: "expense-*"                    # This Project will allow to deploy only on "expense-*" namespaces
+      server: https://kubernetes.default.svc    # This Project will allow to deploy only on this kubernetes cluster
 
   clusterResourceWhitelist:
     - group: ""
-      kind: "Namespace"
+      kind: "Namespace"                         # This Project will allow child Apps to create Namespace
 
   namespaceResourceWhitelist:
     - group: "*"
@@ -219,7 +219,7 @@ spec:
 ```
 ### Explanation
 
-👉 `clusterResourceWhitelist` → Allows Helm charts to deploy ClusterRole, CRDs, etc.  
+👉 `clusterResourceWhitelist` → Allows Helm charts to deploy cluster level resources like Namespace, ClusterRole, CRB, PV, SC, CRDs, etc.  
 👉 `namespaceResourceWhitelist` → Allows namespace-level objects  
 👉 `destinations` → Matching "expense-*" namespace is allowed
 
