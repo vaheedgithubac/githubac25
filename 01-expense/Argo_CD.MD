@@ -170,22 +170,25 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ## STEP 5️⃣ — AppProject Creation
 
 Create an **AppProject** in `argocd` namespace to group and manage all **expense** microservice applications, define allowed Git repos, destinations, and roles:
-
+**AppProject** for non-prod environments like(dev, stage)
 `AppProject.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject                                # This will be used to group 'Applications' under this Project
 metadata:
-  name: expense-project
+  name: expense-project-dev
   namespace: argocd
 spec:
   description: Project for expense microservice
 
   sourceRepos:
-    - "https://github.com/my-org/my-repo.git"   # Argo CD 'Applications' which are part of this Project can only deploy from this repository
+    - "https://github.com/my-org/expense.git"   # Argo CD 'Applications' which are part of this Project can only deploy from this repository
 
   destinations:
-    - namespace: "expense-*"                    # This Project will allow to deploy only on "expense-*" namespaces
+    - namespace: "expense-dev"                  # This Project will allow to deploy only on "expense-dev" namespaces
+      server: https://kubernetes.default.svc    # This Project will allow to deploy only on this kubernetes cluster
+
+    - namespace: "expense-stage"                # This Project will allow to deploy only on "expense-dev" namespaces
       server: https://kubernetes.default.svc    # This Project will allow to deploy only on this kubernetes cluster
 
   clusterResourceWhitelist:
@@ -195,33 +198,12 @@ spec:
   namespaceResourceWhitelist:
     - group: "*"
       kind: "*"
-
-  roles:
-    # 🔹 Frontend admin
-    - name: expense-frontend-admin
-      policies:
-        - p, proj:expense-project:expense-frontend-admin, applications, *, expense-project/expense-*-frontend, allow
-
-    # 🔹 Backend admin
-    - name: expense-backend-admin
-      policies:
-        - p, proj:expense-project:expense-backend-admin, applications, *, expense-project/expense-*-backend, allow
-
-    # 🔹 Database admin
-    - name: expense-database-admin
-      policies:
-        - p, proj:expense-project:expense-database-admin, applications, *, expense-project/expense-*-database, allow
-
-    # 🔹 Expense super admin
-    - name: expense-admin
-      policies:
-        - p, proj:expense-project:expense-admin, applications, *, expense-project/*, allow
 ```
 ### Explanation
 
 👉 `clusterResourceWhitelist` → Allows Helm charts to deploy cluster level resources like Namespace, ClusterRole, CRB, PV, SC, CRDs, etc.  
 👉 `namespaceResourceWhitelist` → Allows namespace-level objects  
-👉 `destinations` → Matching "expense-*" namespace is allowed
+👉 `destinations` → Matching "expense-(dev/stage)" namespace is allowed
 
 Apply the yaml file
 ```bash
@@ -237,7 +219,7 @@ Create an **ApplicationSet** to deploy all **expense** microservice components (
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: expense-applicationset
+  name: expense-applicationset-dev
   namespace: argocd
 spec:
   generators:
@@ -276,7 +258,7 @@ spec:
         notifications.argoproj.io/subscribe.on-sync-failed.email: "expense-{{env}}-{{path.basename}}@example.com"
 
     spec:
-      project: expense-project         # This is the name of 'AppProject' created previously
+      project: expense-project-dev         # This is the name of 'AppProject' created previously
 
       source:
         repoURL: https://github.com/my-org/my-repo.git
@@ -415,9 +397,9 @@ metadata:
 data:
   application.namespaces: argocd      # Ensures Application related CRs in 'argocd' namespace for best practice and security
 
-  accounts.expense-frontend-user: login
-  accounts.expense-backend-user: login
-  accounts.expense-database-user: login
+  accounts.expense-dev-user: login
+  accounts.expense-stage-user: login
+  accounts.expense-prod-user: login
   accounts.expense-admin: login
 ```
 
@@ -430,9 +412,9 @@ data:
 Use the Argo CD CLI to set passwords.  
 
 ```bash
-argocd account update-password --account expense-frontend-user  
-argocd account update-password --account expense-backend-user   
-argocd account update-password --account expense-database-user
+argocd account update-password --account expense-dev-user  
+argocd account update-password --account expense-stage-user   
+argocd account update-password --account expense-prod-user
 argocd account update-password --account expense-admin  
 ```
 👉 You will be prompted to enter passwords interactively.   
@@ -450,25 +432,49 @@ data:
   policy.default: role:readonly    # Default role for the user that is not associated with any
 
   policy.csv: |
-    # expense Frontend user
-    g, expense-frontend-user, proj:expense-project:expense-frontend-admin
+    # expense Dev + Stage user
+    p, role:expense-dev, applications, *, expense-dev/*, allow
+    p, role:expense-stage, applications, *, expense-stage/*, allow
 
-    # expense Backend user
-    g, expense-backend-user, proj:expense-project:expense-backend-admin   
+    # expense Prod user
+    p, role:expense-prod, applications, *, expense-prod/*, allow
 
-    # expense Backend user
-    g, expense-database-user, proj:expense-project:expense-database-admin  
+    # expense Admin (FULL)
+    p, role:expense-admin, *, *, expense-dev/*, allow
+    p, role:expense-admin, *, *, expense-stage/*, allow
+    p, role:expense-admin, *, *, expense-prod/*, allow
 
-    # expense admin (full access)
-    g, expense-admin, proj:expense-project:expense-admin
+    # Bind users to appropriate roles
+    g, expense-dev-user, role:expense-dev
+    g, expense-stage-user, role:expense-stage
+    g, expense-prod-user, role:expense-prod
+    g, expense-admin-user, role:expense-admin
 ```   
-Format: `g, <user-name>, proj:<proj-name>:<role-name>`
-(g ---> for group)
+
 ## Explanation
-👉 `policy.default`: role:readonly → Safe default access   
-👉 `g, user, role` → Assigns a user to a role   
-👉 Roles are **project-scoped**, not global   
-👉 Access is limited to **only allowed applications**  
+```bash
+syntax:  p, <subject>, <resource>, <action>, <object>, <effect>
+example: p, role:expense-nonprod, applications, *, expense-dev/*, allow   
+```
+| Field                  | Value    | Meaning                                    |
+| ---------------------- | -------- | ------------------------------------------ |
+| `p`                    | policy   | This is a permission rule                  |
+| `role:expense-nonprod` | subject  | The RBAC role                              |
+| `applications`         | resource | Argo CD Application objects                |
+| `*`                    | action   | Any action (get, list, sync, delete, etc.) |
+| `expense-dev/*`        | object   | **project/application-name**               |
+| `allow`                | effect   | Permit access                              |
+
+```text
+syntax:   g, <subject>, <role>
+example:  g, expense-dev-user, role:expense-nonprod
+```
+| Part                   | Value         | Meaning            |
+| ---------------------- | ------------- | ------------------ |
+| `g`                    | grouping rule | Assign membership  |
+| `expense-dev-user`     | subject       | A **user account** |
+| `role:expense-nonprod` | role          | The RBAC role      |
+
 ```bash
 argocd account get-user-info
 
@@ -489,25 +495,23 @@ argocd login <ARGOCD_SERVER> --username expense-frontend-user
 argocd app list   
 ```
 Expected behavior:   
-👉 `expense-frontend-user`    
-    ✔ Can manage `expense-*-frontend`      
-    ❌ Cannot access backend or database apps     
-
-👉 `expense-backend-user`   
-    ✔ Can manage `expense-*-backend`    
-    ❌ Cannot access frontend or database apps   
-
-👉 `expense-admin`   
+👉 `expense-dev-user`    
+    ✔ Can manage only `expense-dev` namespace objects tied to `AppProject: expense-dev` 
+👉 `expense-stage-user`   
+    ✔ Can manage only `expense-stage` namespace objects tied to `AppProject: expense-stage` 
+👉 `expense-prod-user`   
+    ✔ Can manage only `expense-prod` namespace objects tied to `AppProject: expense-prod`
+👉 `expense-admin-user`   
     ✔ Full access to all Expense applications    
 
 ## 🔐 Final Access Summary      
 
-| User                  | Role                   | Access Scope        |   
-| --------------------- | ---------------------- | ------------------- |    
-| expense-frontend-user | expense-frontend-admin | Frontend apps only  |   
-| expense-backend-user  | expense-backend-admin  | Backend apps only   |    
-| expense-database-user | expense-database-admin | Database apps only  |  
-| expense-admin         | expense-admin          | Full Expense access |   
+| User                  | Role            | Access Scope                          |   
+| --------------------- | --------------- | ------------------------------------  |    
+| expense-dev-user      | expense-dev     | `expense-dev` namespace apps only     |   
+| expense-stage-user    | expense-stage   | `expense-stage` namespace apps only   |    
+| expense-prod-user     | expense-prod    | `expense-prod` namespace apps only    |  
+| expense-admin         | expense-admin   | Full Expense access                   |   
 
 ## To know currently loggedin user info:
 ```bash
@@ -519,14 +523,6 @@ Username: admin
 Roles: admin
 Groups: 
 ```
-
-## ✅ Result   
-You now have:    
-✔ Environment-isolated applications   
-✔ Component-level access control    
-✔ Secure RBAC using AppProject roles   
-✔ Enterprise-grade Argo CD setup   
-
 ## STEP 1️⃣1️⃣ — Use Private Git Repository with Argo CD       
 ✅ **Method 1 — SSH Authentication (Recommended)**   
 ## 🔹 STEP 11.1.1 — Generate SSH Key (if you don’t have one) 
