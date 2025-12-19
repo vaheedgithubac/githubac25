@@ -230,7 +230,7 @@ kubectl apply -f AppProject.yml
 
 ## STEP 6️⃣ — ApplicationSet for Components with Notifications
 
-Create an **ApplicationSet** to deploy all Expense microservice components (frontend, backend, database) per environment, with **component-specific notifications** and **sync waves**:
+Create an **ApplicationSet** to deploy all **expense** microservice components (frontend, backend, database) per environment, with **component-specific notifications** and **sync waves**:
 
 `ApplicationSet.yml`
 ```yaml
