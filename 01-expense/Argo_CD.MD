@@ -276,7 +276,7 @@ spec:
         notifications.argoproj.io/subscribe.on-sync-failed.email: "expense-{{env}}-{{path.basename}}@example.com"
 
     spec:
-      project: expense-project
+      project: expense-project         # This is the name of 'AppProject' created previously
 
       source:
         repoURL: https://github.com/my-org/my-repo.git
