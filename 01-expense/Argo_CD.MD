@@ -413,7 +413,7 @@ metadata:
   name: argocd-cm
   namespace: argocd
 data:
-  application.namespaces: argocd          # Ensures Application related CRs in 'argocd' namespace for best practice and security
+  application.namespaces: argocd      # Ensures Application related CRs in 'argocd' namespace for best practice and security
 
   accounts.expense-frontend-user: login
   accounts.expense-backend-user: login
