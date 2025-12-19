@@ -480,7 +480,7 @@ kubectl rollout restart deployment argocd-server -n argocd
 ## 🔹 STEP 10.5 — Validate Access
 Login as frontend user   
 ```bash
-argocd login <ARGOCD_SERVER>   
+argocd login <ARGOCD_SERVER> --username expense-frontend-user
 argocd app list   
 ```
 Expected behavior:   
