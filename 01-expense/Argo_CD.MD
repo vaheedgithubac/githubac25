@@ -66,7 +66,7 @@ argocd-notifications-controller-xxxxx  1/1     Running   0          1m
 ```
 ## STEP 2️⃣ — Create Secret for Email
 
-We don’t store passwords in plain ConfigMaps. Let’s create a **Kubernetes Secret** for Argo CD Notifications in `argocd` namespace:
+We don’t store passwords in plain ConfigMaps. Let’s create a **Kubernetes Secret** for Argo CD Notifications in `argocd` namespace:   
 `argocd-notifications-secret.yml`
 ```yaml
 apiVersion: v1
