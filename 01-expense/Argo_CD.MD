@@ -483,7 +483,7 @@ RBAC changes require restarting the Argo CD server.
 kubectl rollout restart deployment argocd-server -n argocd   
 ```
 ## 🔹 STEP 10.5 — Validate Access
-Login as frontend user   
+Login as `expense-frontend-user`   
 ```bash
 argocd login <ARGOCD_SERVER> --username expense-frontend-user
 argocd app list   
