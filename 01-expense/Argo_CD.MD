@@ -456,7 +456,9 @@ data:
 
     # Expense admin (full access)
     g, expense-admin, proj:expense-project:expense-admin
-```
+```   
+Format: `g, <user-name>, proj:<proj-name>:<role-name>`
+(g ---> for group)
 ## Explanation
 👉 `policy.default`: role:readonly → Safe default access   
 👉 `g, user, role` → Assigns a user to a role   
