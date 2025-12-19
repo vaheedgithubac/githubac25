@@ -445,7 +445,7 @@ metadata:
   name: argocd-rbac-cm
   namespace: argocd
 data:
-  policy.default: role:readonly
+  policy.default: role:readonly    # Default role for the user that is not associated with any
 
   policy.csv: |
     # Expense Frontend user
