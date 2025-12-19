@@ -167,9 +167,9 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ```
 ✅ Now Notifications controller can read SMTP credentials securely.
 
-## STEP 5️⃣ — AppProject creation
+## STEP 5️⃣ — AppProject Creation
 
-Create an **AppProject** in Argo CD in `argocd` namespace to group and manage all Expense microservice applications, define allowed Git repos, destinations, and roles:
+Create an **AppProject** in `argocd` namespace to group and manage all Expense microservice applications, define allowed Git repos, destinations, and roles:
 
 `AppProject.yml`
 ```yaml
