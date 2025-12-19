@@ -171,7 +171,7 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 
 Create an **AppProject** in `argocd` namespace to group and manage all **expense** microservice applications, define allowed Git repos, destinations, and roles:
 **AppProject** for non-prod environments like(dev, stage)  
-`AppProject.yml`
+`AppProject-dev.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject                                # This will be used to group 'Applications' under this Project
@@ -199,6 +199,7 @@ spec:
     - group: "*"
       kind: "*"
 ```
+Similarly create `AppProject-stage.yml` and `AppProject-prod.yml`
 ### Explanation
 
 👉 `clusterResourceWhitelist` → Allows Helm charts to deploy cluster level resources like Namespace, ClusterRole, CRB, PV, SC, CRDs, etc.  
@@ -214,7 +215,7 @@ kubectl apply -f AppProject.yml
 
 Create an **ApplicationSet** to deploy all **expense** microservice components (frontend, backend, database) per environment, with **component-specific notifications** and **sync waves**:
 
-`ApplicationSet.yml`
+`ApplicationSet-dev.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
