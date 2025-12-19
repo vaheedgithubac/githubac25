@@ -283,6 +283,8 @@ spec:
           - ServerSideApply=true
           - PruneLast=true
 ```
+Similarly create `ApplicationSet-stage.yml` and `ApplicationSet-prod.yml`   
+
 Apply the ApplicationSet:
 ```bash
 kubectl apply -f expense-applicationset.yaml
