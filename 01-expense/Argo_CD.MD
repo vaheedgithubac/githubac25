@@ -200,22 +200,22 @@ spec:
     # 🔹 Frontend admin
     - name: expense-frontend-admin
       policies:
-        - p, proj:expense-project:expense-frontend-admin, applications, *, expense/expense-*-frontend, allow
+        - p, proj:expense-project:expense-frontend-admin, applications, *, expense-project/expense-*-frontend, allow
 
     # 🔹 Backend admin
     - name: expense-backend-admin
       policies:
-        - p, proj:expense-project:expense-backend-admin, applications, *, expense/expense-*-backend, allow
+        - p, proj:expense-project:expense-backend-admin, applications, *, expense-project/expense-*-backend, allow
 
     # 🔹 Database admin
     - name: expense-database-admin
       policies:
-        - p, proj:expense-project:expense-database-admin, applications, *, expense/expense-*-database, allow
+        - p, proj:expense-project:expense-database-admin, applications, *, expense-project/expense-*-database, allow
 
     # 🔹 Expense super admin
     - name: expense-admin
       policies:
-        - p, proj:expense-project:expense-admin, applications, *, expense/*, allow
+        - p, proj:expense-project:expense-admin, applications, *, expense-project/*, allow
 ```
 ### Explanation
 
