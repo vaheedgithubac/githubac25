@@ -313,13 +313,11 @@ kubectl apply -f expense-applicationset.yaml
 👉 `name: expense-{{env}}-{{path.basename}}` → Generates application names like `expense-dev-frontend`.  
 👉 `argocd.argoproj.io/sync-wave` → Ensures **database deploys first (0)**, then **backend (1)**, then **frontend (2)**.  
 👉 `notifications.argoproj.io/subscribe.*.email` → Sends **component-specific email notifications**.  
-👉 `syncPolicy` → Automates sync, self-heals, prunes resources not in Git.  
-👉 `destination.namespace` → Creates environment-specific namespaces dynamically (`expense-dev`).  
 
 👉 `metadata.annotations` → Component-specific notifications  
 👉 `source.path` → Points to the Helm chart folder  
-👉 `destination.namespace` → Isolated namespace per component  
-👉 `syncPolicy` → Auto-sync, self-heal, auto-create namespace
+👉 `destination.namespace` → Isolated namespace per component, Creates environment-specific namespaces dynamically (`expense-dev`). 
+👉 `syncPolicy` → Auto-sync, self-heal, auto-create namespace and prunes resources not in Git.
 
 ✅ All triggers (on-deployed, on-health-degraded, on-sync-failed) are consistent with templates in ConfigMap.
 
