@@ -417,6 +417,7 @@ data:
 
   accounts.expense-frontend-user: login
   accounts.expense-backend-user: login
+  accounts.expense-database-user: login
   accounts.expense-admin: login
 ```
 
@@ -431,6 +432,7 @@ Use the Argo CD CLI to set passwords.
 ```bash
 argocd account update-password --account expense-frontend-user  
 argocd account update-password --account expense-backend-user   
+argocd account update-password --account expense-database-user
 argocd account update-password --account expense-admin  
 ```
 👉 You will be prompted to enter passwords interactively.   
@@ -448,13 +450,16 @@ data:
   policy.default: role:readonly    # Default role for the user that is not associated with any
 
   policy.csv: |
-    # Expense Frontend user
+    # expense Frontend user
     g, expense-frontend-user, proj:expense-project:expense-frontend-admin
 
-    # Expense Backend user
-    g, expense-backend-user, proj:expense-project:expense-backend-admin
+    # expense Backend user
+    g, expense-backend-user, proj:expense-project:expense-backend-admin   
 
-    # Expense admin (full access)
+    # expense Backend user
+    g, expense-database-user, proj:expense-project:expense-database-admin  
+
+    # expense admin (full access)
     g, expense-admin, proj:expense-project:expense-admin
 ```   
 Format: `g, <user-name>, proj:<proj-name>:<role-name>`
@@ -500,7 +505,8 @@ Expected behavior:
 | User                  | Role                   | Access Scope        |   
 | --------------------- | ---------------------- | ------------------- |    
 | expense-frontend-user | expense-frontend-admin | Frontend apps only  |   
-| expense-backend-user  | expense-backend-admin  | Backend apps only   |   
+| expense-backend-user  | expense-backend-admin  | Backend apps only   |    
+| expense-database-user | expense-database-admin | Database apps only  |  
 | expense-admin         | expense-admin          | Full Expense access |   
 
 ## To know currently loggedin user info:
