@@ -170,7 +170,7 @@ kubectl rollout restart deployment argocd-notifications-controller -n argocd
 ## STEP 5️⃣ — AppProject Creation
 
 Create an **AppProject** in `argocd` namespace to group and manage all **expense** microservice applications, define allowed Git repos, destinations, and roles:
-**AppProject** for non-prod environments like(dev, stage)
+**AppProject** for non-prod environments like(dev, stage)  
 `AppProject.yml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
