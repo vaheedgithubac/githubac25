@@ -542,7 +542,7 @@ Example: GitHub
 
 1. Go to Repo → Settings → Deploy keys   
 2. Click Add deploy key    
-3. Paste contents of id_ed25519.pub    
+3. Paste contents of `id_ed25519.pub`    
 4. Enable Read-only access   
 5. Save    
 👉 This allows Argo CD to read the repo securely.   
