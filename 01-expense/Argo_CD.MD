@@ -75,8 +75,8 @@ metadata:
   name: argocd-notifications-secret
   namespace: argocd
 stringData:
-  smtp-host: smtp.example.com
-  smtp-port: "587"
+  smtp-host: smtp.gmail.com
+  smtp-port: 465                 #"465"
   smtp-from: argocd@example.com
   smtp-username: argocd@example.com
   smtp-password: examplepassword
