@@ -5,7 +5,7 @@ services:
     image: expense-nginx-img
     container_name: expense-nginx-cont
     ports:
-      - "8080:80"  # NGINX listens on port 8080 of the host
+      - "80:8080"  # NGINX listens on port 8080 of the host
     depends_on:
       app-expense:
           condition: service_healthy
@@ -24,8 +24,8 @@ services:
       start_period: 15s
 
   app-expense:
-    image: app-expense-img
-    container_name: app-expense-cont
+    image: expense-app-img
+    container_name: expense-app-cont
     #command: sh -c "sleep 5 && apt-get update && apt-get install curl -y && sleep 5000"
     build: 
       context: ./backend
@@ -51,7 +51,7 @@ services:
   
   db-mysql:
     image: mysql:8.0
-    container_name: mysqldb-expense
+    container_name: expense-mysqldb-cont
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ExpenseApp@1
