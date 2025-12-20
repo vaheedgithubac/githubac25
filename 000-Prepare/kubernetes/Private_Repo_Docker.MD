@@ -110,6 +110,61 @@ kubectl apply -f deployment.yaml
 serviceAccountName: app-sa   
 ```
 **3. ServiceAccount references:**  
+```makefile
+imagePullSecrets: dockerhub-secret
+```
+**4. kubelet authenticates to Docker Hub**  
+**5. Private image is pulled**  
+**6. Container starts**  
+
+## 7️⃣ Verify everything works
+**Check Pod status**
+```bash
+kubectl get pods -n app
+```
+You want:
+```makefile
+STATUS: Running
+```
+**If it fails, check events (VERY IMPORTANT)**  
+```bash
+kubectl describe pod <pod-name> -n app
+```
+## 🧠 Final mental model
+**ServiceAccount = identity**    
+**Secret = credentials**   
+**Pod = uses identity**  
+
+## 8️⃣ Common errors & EXACT fixes
+**❌ ImagePullBackOff**  
+**Causes:**
+  - Wrong image name
+  - Wrong tag
+  - Secret not attached to ServiceAccount
+  - Wrong Docker Hub credentials
+**Fix:**
+  - Double-check image name  
+  - Recreate secret  
+  - Ensure ServiceAccount is used  
+
+## ❌ unauthorized: authentication required
+**Causes:**
+  - Using Docker password instead of token
+  - Token expired or revoked
+**Fix:**
+  - Create Docker Hub Access Token  
+  - Recreate secret  
+
+❌ Pod stuck in Pending
+**Cause:**
+  - Image pull failure
+**Fix:**
+## ✅ Production best practices
+✔ One ServiceAccount per app
+✔ One registry secret per namespace
+✔ Use tokens, never passwords
+✔ Rotate tokens periodically
+✔ For EKS → prefer IRSA
 
 
 
