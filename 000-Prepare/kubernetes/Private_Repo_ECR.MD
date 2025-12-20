@@ -25,11 +25,11 @@ Pod
 - AWS allows that role to pull images from ECR
 
 ## 3️⃣ Prerequisites
-You must have:
-✔ EKS cluster
-✔ AWS CLI configured
-✔ eksctl installed
-✔ ECR repository exists
+You must have:  
+✔ EKS cluster  
+✔ AWS CLI configured  
+✔ eksctl installed  
+✔ ECR repository exists  
 
 ## 4️⃣ Enable OIDC provider (one-time)
 Create IAM OIDC privider
