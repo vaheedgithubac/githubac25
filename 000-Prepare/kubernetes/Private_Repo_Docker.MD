@@ -39,8 +39,35 @@ kubectl create secret docker-registry dockerhub-secret \
 **🔹 What this does:**  
   - Creates secret of type kubernetes.io/dockerconfigjson  
   - Generates valid .dockerconfigjson  
-  - Handles base64 correctly  
+  - Handles base64 correctly 
 
+## OR 3.1 You can create your own secret yaml file
+**Login to docker hub first, then only `.dockerconfigjson` will be created automatically**   
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dockerhub-secret
+  namespace: app
+type: kubernetes.io/dockerconfigjson
+stringData:
+  .dockerconfigjson: |
+    {
+      "auths": {
+        "https://index.docker.io/v1/": {
+          "username": "DOCKERHUB_USERNAME",
+          "password": "DOCKERHUB_ACCESS_TOKEN",
+          "auth": "BASE64(username:token)"
+        }
+      }
+    }
+```
+```text
+Note:
+-----
+1. If you use `stringData:`, then it's content should be plain text
+2. If you use `data:`, then it's content should be `base64` encoded
+```
 🔍 Verify the secret  
 ```bash
 kubectl get secret dockerhub-secret -n app
