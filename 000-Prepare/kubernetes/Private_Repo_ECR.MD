@@ -107,10 +107,10 @@ spec:
       - name: app
         image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
 ```
-🚨 Important:
-  ❌ NO imagePullSecrets
-  ❌ NO Docker secret
-  ✔ IRSA handles auth
+🚨 Important:  
+  ❌ NO imagePullSecrets  
+  ❌ NO Docker secret  
+  ✔ IRSA handles auth  
 
 ## 8️⃣ What happens at runtime (flow)  
 **1. Pod starts**
