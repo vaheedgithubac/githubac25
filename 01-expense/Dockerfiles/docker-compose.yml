@@ -2,8 +2,8 @@ name: expense-stack
 services:
 
   expense-frontend-nginx:
-    image: expense-nginx-img
-    container_name: expense-nginx-cont
+    image: expense-frontend-img
+    container_name: expense-frontend-cont
     ports:
       - "80:8080"  # NGINX listens on container port 8080
     depends_on:
@@ -24,12 +24,12 @@ services:
       start_period: 15s
 
   expense-backend-node:
-    image: expense-app-img
-    container_name: expense-app-cont
+    image: expense-backend-img
+    container_name: expense-backend-cont
     #command: sh -c "sleep 5 && apt-get update && apt-get install curl -y && sleep 5000"
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
+    #build: 
+    #  context: ./backend
+    #  dockerfile: Dockerfile
     ports:
       - "8080"     # Refers to host port
     depends_on:
@@ -37,19 +37,19 @@ services:
         condition: service_healthy
         restart: true   
     environment:
-      - DB_HOST=db-mysql
+      - DB_HOST=expense-db-mysql
     networks:
       - frontend
       - backend
     healthcheck:
-     #test: ["CMD", "netstat", "-tulnp", "|", "grep", ":5000"]
+      #test: ["CMD", "netstat", "-tulnp", "|", "grep", ":5000"]
       test: ["CMD-SHELL", "sh", "files/health_checks/app_health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 20s
   
-  expense-db-db-mysql:
+  expense-db-mysql:
     image: mysql:8.0
     container_name: expense-mysqldb-cont
     restart: always
@@ -58,7 +58,7 @@ services:
       MYSQL_USER: expense
       MYSQL_PASSWORD: ExpenseApp@1
       MYSQL_DATABASE: transactions
-    # ports:
+    #ports:
     #   - "3306:3306"
     #volumes:
     #  - mydb:/var/lib/mysql
@@ -76,10 +76,10 @@ services:
 
 volumes:
   mydb:
-    name: expense-mysqldb-data-v1    # Explicitly name the volume
-    driver: local                  # Optional, as local is the default driver
+    name: expense-mysqldb-data-v1           # Explicitly name the volume
+    driver: local                           # Optional, as local is the default driver
     labels:
-      project: "expense-web-app-stack"        # Label to indicate the project name
+      project: "expense-web-app-stack"      # Label to indicate the project name
       component: "mysql-database"           # Label to specify that this volume is for the MySQL database
       purpose: "persistent-storage"         # Label to indicate the purpose of this volume
 
