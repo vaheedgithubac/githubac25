@@ -17,7 +17,7 @@ services:
       - frontend  
     healthcheck:
       #test: ["CMD", "curl", "-f", "localhost:80/nginx-health"]
-      test: ["CMD-SHELL", "sh", "nginx_health_check.sh"]
+      test: ["CMD-SHELL", "sh", "health_checks/nginx_health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -43,7 +43,7 @@ services:
       - backend
     healthcheck:
      #test: ["CMD", "netstat", "-tulnp", "|", "grep", ":5000"]
-      test: ["CMD-SHELL", "sh", "app_health_check.sh"]
+      test: ["CMD-SHELL", "sh", "health_checks/app_health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,7 +68,7 @@ services:
     healthcheck:
       #test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pdbpassword11"] # not that much reliable, gives false positives
       #test: ["CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]  # working perfectly
-      test: ["CMD-SHELL", "sh", "mysql_health_check.sh"]
+      test: ["CMD-SHELL", "sh", "health_checks/mysql_health_check.sh"]
       interval: 30s
       timeout: 10s
       retries: 3
