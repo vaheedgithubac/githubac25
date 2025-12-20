@@ -21,6 +21,6 @@ RUN touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid /run/nginx.pid
 #COPY nginx.conf /etc/nginx/nginx.conf
 
-COPY .files/expense.conf /etc/nginx/conf.d/expense.conf:ro  # Custom NGINX configuration
-COPY code/. /usr/share/nginx/html/
+COPY files/expense.conf /etc/nginx/conf.d/expense.conf:ro  # Custom NGINX configuration
+COPY code/. /usr/share/nginx/html/                         # copies only contents from code/ to html/
 USER nginx
