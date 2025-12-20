@@ -130,11 +130,6 @@ STATUS: Running
 ```bash
 kubectl describe pod <pod-name> -n app
 ```
-## 🧠 Final mental model
-**ServiceAccount = identity**    
-**Secret = credentials**   
-**Pod = uses identity**  
-
 ## 8️⃣ Common errors & EXACT fixes
 **❌ ImagePullBackOff**  
 **Causes:**
@@ -157,8 +152,38 @@ kubectl describe pod <pod-name> -n app
 
 ❌ Pod stuck in Pending
 **Cause:**
-  - Image pull failure
+  - Image pull failure  
 **Fix:**
+```bash
+kubectl describe pod <pod>
+```
+
+## 9️⃣ MOST COMMON MISTAKES (90% failures)
+❌ Forgetting serviceAccountName in Deployment  
+❌ Creating secret in wrong namespace  
+❌ Typo in secret name  
+❌ Using latest tag that doesn’t exist  
+❌ Using email/password instead of token  
+
+## 🔟 Docker Hub vs Other Registries    
+**🔹 Amazon ECR**  
+- Use IRSA (BEST) or docker-registry secret  
+- Username = `AWS`  
+- Password = ECR token  
+**🔹 GitHub Container Registry** 
+```bash
+--docker-server=ghcr.io
+--docker-username=github-username
+--docker-password=ghp_xxx
+```
+## 🔹 Google Artifact Registry  
+- Use JSON key as password
+
+## 🧠 Final mental model
+**ServiceAccount = identity**    
+**Secret = credentials**   
+**Pod = uses identity**  
+
 ## ✅ Production best practices
 ✔ One ServiceAccount per app
 ✔ One registry secret per namespace
