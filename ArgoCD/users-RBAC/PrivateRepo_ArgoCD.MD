@@ -42,8 +42,8 @@ argocd.argoproj.io/secret-type: repository
 4.**Reads:** 
   - `url` 
   - `username` 
-  - `password` 
-5.**When syncing an Application:**
+  - `password`   
+**5.When syncing an Application:**
   - `Matches repoURL`
   - `Uses stored credentials`
   - `Authenticates to GitHub`
