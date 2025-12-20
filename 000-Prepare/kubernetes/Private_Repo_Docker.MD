@@ -107,7 +107,7 @@ kubectl apply -f deployment.yaml
 **1. Pod is created**  
 **2. Kubernetes sees:**  
 ```make
-serviceAccountName: app-sa**  
+serviceAccountName: app-sa   
 ```
 **3. ServiceAccount references:**  
 
