@@ -113,12 +113,12 @@ spec:
   ✔ IRSA handles auth  
 
 ## 8️⃣ What happens at runtime (flow)  
-**1. Pod starts**
-**2. kubelet requests image from ECR**
-**3. AWS checks IAM role via OIDC**
-**4. Role has ECR permissions**
-**5. Image is pulled**
-**6. Pod runs**
+**1. Pod starts**  
+**2. kubelet requests image from ECR**  
+**3. AWS checks IAM role via OIDC**  
+**4. Role has ECR permissions**  
+**5. Image is pulled**  
+**6. Pod runs**  
 
 ## 9️⃣ How to verify IRSA is working 
 **Check ServiceAccount annotation**
