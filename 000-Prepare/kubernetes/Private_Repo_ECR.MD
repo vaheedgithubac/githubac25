@@ -155,7 +155,7 @@ If working:
 
 🧠 Final takeaway  
 **If you are using EKS + ECR → always use IRSA**  
-It is:
+**It is:**
  - Secure
  - Simple
  - Production-grade
