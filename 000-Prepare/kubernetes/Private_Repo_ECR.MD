@@ -139,11 +139,11 @@ If working:
 
 ## 🔟 Common mistakes (VERY common)
 
-❌ Forgetting to use the ServiceAccount in Deployment
-❌ Wrong namespace
-❌ Missing OIDC provider
-❌ Using node IAM role instead (old method)
-❌ ECR repo in different region
+❌ Forgetting to use the ServiceAccount in Deployment  
+❌ Wrong namespace  
+❌ Missing OIDC provider  
+❌ Using node IAM role instead (old method)  
+❌ ECR repo in different region  
 
 ## 1️⃣1️⃣ Comparison (why IRSA wins)
 | Method        | Secrets | Rotation | Security | Recommended |
