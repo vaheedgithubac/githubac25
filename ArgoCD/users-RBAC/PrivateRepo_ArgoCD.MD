@@ -40,11 +40,11 @@ stringData:
 argocd.argoproj.io/secret-type: repository
 ```
 4. **Reads:** 
-  - `url` 
-  - `username` 
-  - `password`   
+    - `url` 
+    - `username` 
+    - `password`   
 5. **When syncing an Application:**
-  - `Matches repoURL`
-  - `Uses stored credentials`
-  - `Authenticates to GitHub`
-  - `Pulls manifests`
+    - `Matches repoURL`
+    - `Uses stored credentials`
+    - `Authenticates to GitHub`
+    - `Pulls manifests`
