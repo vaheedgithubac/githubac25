@@ -500,14 +500,10 @@ argocd login <ARGOCD_SERVER> --username expense-frontend-user
 argocd app list   
 ```
 Expected behavior:     
-👉 `expense-dev-user`      
-    ✔ Can manage only `expense-dev` namespace objects tied to `AppProject: expense-dev`   
-👉 `expense-stage-user`     
-    ✔ Can manage only `expense-stage` namespace objects tied to `AppProject: expense-stage`   
-👉 `expense-prod-user`     
-    ✔ Can manage only `expense-prod` namespace objects tied to `AppProject: expense-prod`  
-👉 `expense-admin-user`     
-    ✔ Full access to all Expense applications       
+👉 `expense-dev-user`:   ✔ Can manage only `expense-dev` namespace objects tied to `AppProject: expense-dev`   
+👉 `expense-stage-user`: ✔ Can manage only `expense-stage` namespace objects tied to `AppProject: expense-stage`   
+👉 `expense-prod-user`:  ✔ Can manage only `expense-prod` namespace objects tied to `AppProject: expense-prod`  
+👉 `expense-admin-user`: ✔ Full access to all Expense applications       
 
 ## 🔐 Final Access Summary      
 
