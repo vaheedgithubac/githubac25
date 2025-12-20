@@ -184,12 +184,12 @@ kubectl describe pod <pod>
 **Secret = credentials**   
 **Pod = uses identity**  
 
-## ✅ Production best practices
-✔ One ServiceAccount per app
-✔ One registry secret per namespace
-✔ Use tokens, never passwords
-✔ Rotate tokens periodically
-✔ For EKS → prefer IRSA
+## ✅ Production best practices  
+✔ One ServiceAccount per app  
+✔ One registry secret per namespace  
+✔ Use tokens, never passwords  
+✔ Rotate tokens periodically  
+✔ For EKS → prefer IRSA  
 
 
 
