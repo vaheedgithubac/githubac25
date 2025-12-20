@@ -1,0 +1,88 @@
+name: expense-stack
+services:
+
+  web-nginx:
+    image: nginx:1.27.4
+    container_name: expense-nginx
+    ports:
+      - "80:80"  # NGINX listens on port 8080 of the host
+    depends_on:
+      app-expense:
+          condition: service_healthy
+          restart: true   
+    #volumes:
+      #- ./frontend/code:/usr/share/nginx/html
+      #- ./expense.conf:/etc/nginx/conf.d/expense.conf:ro  # Custom NGINX configuration
+    networks:
+      - frontend  
+    healthcheck:
+      #test: ["CMD", "curl", "-f", "localhost:80/nginx-health"]
+      test: ["CMD-SHELL", "sh", "nginx_health_check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  app-expense:
+    image: app-expense-img
+    container_name: app-expense-cont
+    #command: sh -c "sleep 5 && apt-get update && apt-get install curl -y && sleep 5000"
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080"
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+        restart: true   
+    environment:
+      - DB_HOST=db-mysql
+    networks:
+      - frontend
+      - backend
+    healthcheck:
+     #test: ["CMD", "netstat", "-tulnp", "|", "grep", ":5000"]
+      test: ["CMD-SHELL", "sh", "app_health_check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+  
+  db-mysql:
+    container_name: mysqldb-expense
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ExpenseApp@1
+      MYSQL_USER: expense
+      MYSQL_PASSWORD: ExpenseApp@1
+      MYSQL_DATABASE: transactions
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - mydb:/var/lib/mysql
+      - ./mysql/scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
+    networks:
+      - backend   
+    healthcheck:
+      #test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pdbpassword11"] # not that much reliable, gives flase positives
+      #test: ["CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]  # working perfectly
+      test: ["CMD-SHELL", "sh", "mysql_health_check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s     
+
+volumes:
+  mydb:
+    name: expense-mysqldb-data-v1    # Explicitly name the volume
+    driver: local                  # Optional, as local is the default driver
+    labels:
+      project: "expense-web-app-stack"        # Label to indicate the project name
+      component: "mysql-database"           # Label to specify that this volume is for the MySQL database
+      purpose: "persistent-storage"         # Label to indicate the purpose of this volume
+
+networks:
+  frontend:
+  backend:
