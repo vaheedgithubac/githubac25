@@ -25,7 +25,7 @@ Pod
 - AWS allows that role to pull images from ECR
 
 ## 3️⃣ Prerequisites
-You must have:  
+**You must have:**  
 ✔ EKS cluster  
 ✔ AWS CLI configured  
 ✔ eksctl installed  
