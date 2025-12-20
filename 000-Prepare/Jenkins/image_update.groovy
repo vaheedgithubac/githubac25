@@ -4,6 +4,12 @@ pipeline {
     GITHUB_CREDENTIALS_ID = 'github-token'
   }
   stages{
+      stage('Get latest commit') {
+        script {
+           def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+           env.COMMIT_HASH = commitHash
+        }
+      }
       stage('Update image tag') {
                   steps {
                       script {
