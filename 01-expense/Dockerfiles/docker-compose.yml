@@ -2,10 +2,10 @@ name: expense-stack
 services:
 
   web-nginx:
-    image: nginx:1.27.4
-    container_name: expense-nginx
+    image: expense-nginx-img
+    container_name: expense-nginx-cont
     ports:
-      - "80:80"  # NGINX listens on port 8080 of the host
+      - "8080:80"  # NGINX listens on port 8080 of the host
     depends_on:
       app-expense:
           condition: service_healthy
@@ -31,7 +31,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080"
+      - "8080"     # Refers to host port
     depends_on:
       db-mysql:
         condition: service_healthy
@@ -50,8 +50,8 @@ services:
       start_period: 20s
   
   db-mysql:
-    container_name: mysqldb-expense
     image: mysql:8.0
+    container_name: mysqldb-expense
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ExpenseApp@1
@@ -60,13 +60,13 @@ services:
       MYSQL_DATABASE: transactions
     # ports:
     #   - "3306:3306"
-    volumes:
-      - mydb:/var/lib/mysql
-      - ./mysql/scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
+    #volumes:
+    #  - mydb:/var/lib/mysql
+    #  - files/mysql_scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
     networks:
       - backend   
     healthcheck:
-      #test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pdbpassword11"] # not that much reliable, gives flase positives
+      #test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pdbpassword11"] # not that much reliable, gives false positives
       #test: ["CMD-SHELL", "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD" ]  # working perfectly
       test: ["CMD-SHELL", "sh", "mysql_health_check.sh"]
       interval: 30s
