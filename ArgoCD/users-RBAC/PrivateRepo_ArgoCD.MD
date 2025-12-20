@@ -33,17 +33,17 @@ stringData:
 ```
 
 ## 🔹 How Argo CD uses this secret (flow)   
-1.**Argo CD starts**  
-2.**Scans argocd namespace**  
-3.**Finds secrets with label:**  
+1. **Argo CD starts**  
+2. **Scans argocd namespace**  
+3. **Finds secrets with label:**  
 ```yaml
 argocd.argoproj.io/secret-type: repository
 ```
-4.**Reads:** 
+4. **Reads:** 
   - `url` 
   - `username` 
   - `password`   
-**5.When syncing an Application:**
+5. **When syncing an Application:**
   - `Matches repoURL`
   - `Uses stored credentials`
   - `Authenticates to GitHub`
