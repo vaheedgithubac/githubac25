@@ -31,7 +31,7 @@
         timeout: 120         # max wait 2 minutes per attempt
         delay: 10            # wait 10s before the first try
       delegate_to: localhost # Ensures Task runs on Ansible Control Node itself
-      register: ssh_chec
+      register: ssh_check
       retries: 5             # retry 5 times if the task fails
       delay: 15              # wait 15s between retries
       until: ssh_check is succeeded
