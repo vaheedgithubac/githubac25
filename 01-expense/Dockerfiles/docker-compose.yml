@@ -14,7 +14,8 @@ services:
       #- ./frontend/code:/usr/share/nginx/html
       #- ./expense.conf:/etc/nginx/conf.d/expense.conf:ro  # Custom NGINX configuration
     networks:
-      - frontend  
+      - frontend 
+      
     healthcheck:
       #test: ["CMD", "curl", "-f", "localhost:80/nginx-health"]
       test: ["CMD-SHELL", "sh", "files/health_checks/nginx_health_check.sh"]
@@ -62,7 +63,7 @@ services:
     #   - "3306:3306"
     volumes:
       - mydb:/var/lib/mysql
-      - files/mysql_scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
+      - ./files/mysql_scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
     networks:
       - backend   
     healthcheck:
