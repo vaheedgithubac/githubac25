@@ -60,9 +60,9 @@ services:
       MYSQL_DATABASE: transactions
     #ports:
     #   - "3306:3306"
-    #volumes:
-    #  - mydb:/var/lib/mysql
-    #  - files/mysql_scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
+    volumes:
+      - mydb:/var/lib/mysql
+      - files/mysql_scripts/backend.sql:/docker-entrypoint-initdb.d/backend.sql
     networks:
       - backend   
     healthcheck:
