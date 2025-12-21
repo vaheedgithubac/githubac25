@@ -28,7 +28,7 @@ COPY files/expense.conf /etc/nginx/conf.d/expense.conf
 RUN chmod 644 /etc/nginx/conf.d/*.conf
 
 # Copy frontend files
-COPY code/frontend/code/. /usr/share/nginx/html/
+COPY app-code/frontend/code/. /usr/share/nginx/html/
 
 EXPOSE 8080
 
