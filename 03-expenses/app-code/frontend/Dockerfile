@@ -1,0 +1,37 @@
+FROM nginx:stable-alpine
+
+# Remove default server and default index
+RUN rm -f \
+    /usr/share/nginx/html/index.html \
+    /etc/nginx/conf.d/default.conf
+
+# Prepare directories for non-root nginx
+RUN mkdir -p \
+    /var/cache/nginx/client_temp \
+    /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp \
+    /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp \
+    /run \
+    /etc/nginx/ssl \
+  && chown -R nginx:nginx \
+    /var/cache/nginx \
+    /var/log/nginx \
+    /etc/nginx \
+    /run \
+  && chmod 755 /etc/nginx
+
+# Copy custom NGINX config
+COPY files/expense.conf /etc/nginx/conf.d/expense.conf
+
+# Ensure config file permissions
+RUN chmod 644 /etc/nginx/conf.d/*.conf
+
+# Copy frontend files
+COPY code/. /usr/share/nginx/html/
+
+EXPOSE 8080
+
+USER nginx
+
+CMD ["nginx", "-g", "daemon off;"]
