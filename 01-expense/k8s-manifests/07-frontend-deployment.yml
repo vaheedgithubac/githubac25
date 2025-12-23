@@ -24,7 +24,7 @@ spec:
      #     name: expense-nginx-reverse-proxy
 
       initContainers:
-      - name: check-nginx-ready
+      - name: check-app-ready
         image: busybox:1.31
         command: ['sh', '-c', 'echo -e "Checking for the availability of Backend Server deployment"; while ! nc -z expense-backend 8080; do sleep 1; printf "-"; done; echo -e "  >> Backend Server has been started";']
 
