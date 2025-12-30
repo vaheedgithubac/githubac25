@@ -73,8 +73,8 @@ spec:
 **2.** `app.kubernetes.io/name` = **component/service name**
     - Backend, frontend, worker, etc.  
 **3.** `app.kubernetes.io/instance` = **unique instance**  
-    - Helps differentiate environments (dev vs prod).
-**4. Environment labels**
+    - Helps differentiate environments (dev vs prod).  
+**4. Environment labels**  
    - Add `env: dev` or `environment: dev` for filtering in dashboards or Argo CD.  
 
 ## 5️⃣ Why this is helpful  
