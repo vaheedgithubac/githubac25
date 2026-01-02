@@ -1,4 +1,7 @@
 ## **KIND, ARGOCD, HELM and KUBECTL Installation**  
+`minimum: t2.small/t3.small
+ sufficient: t2.medium/t3.medium`
+
 ## 1. Docker should be installed
 ```bash
 sudo yum update -y
