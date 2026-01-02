@@ -69,9 +69,13 @@ nodes:
 - Apply the above `kind-cluster.yaml` to create the KIND cluster `kind create cluster --config=kind-cluster.yaml`
 
 ## 5.Execute following commands to check about cluster
-- Checl all the Clusters   
+- To get the kube/config file
+```bash
+kind export kubeconfig --name dev
+```
+- Check all the Clusters   
 ```bash 
-kind export kubeconfig --name dev 
+kubectl config get-contexts
 ```
 - Check currently to which context(cluster) we are connected to   
 `context = user + cluster + namespace`
@@ -82,11 +86,6 @@ kubectl config current-context
 ```bash
 kubectl config get-contexts
 ```
-- To get the kube/config file
-```bash
-kind export kubeconfig --name dev
-```
-
 
 ## 5. ArgoCD Installation   
 ```bash
