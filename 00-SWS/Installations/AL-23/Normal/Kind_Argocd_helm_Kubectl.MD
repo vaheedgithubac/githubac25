@@ -1,6 +1,6 @@
 ## **KIND, ARGOCD, HELM and KUBECTL Installation**  
-`Minimum: t2.small/t3.small`   
- `Sufficient: t2.medium/t3.medium`
+`Minimum: t2.small/t3.small  (2GB RAM)`   
+ `Sufficient: t2.medium/t3.medium  (4GB RAM)`
 
 ## 1. Docker should be installed
 ```bash
