@@ -1,5 +1,13 @@
 ## **KIND, ARGOCD, HELM and KUBECTL Installation**  
-## 1.KUBECTL-1.31 Installation   
+## 1. Docker should be installed
+```bash
+sudo yum install docker
+sudo usermod -aG docker ec2-user
+sudo newgrp docker
+sudo systemctl start docker
+docker ps
+```
+## 2.KUBECTL-1.31 Installation   
 ```bash
 # For AMD64 / x86_64
 [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
@@ -8,7 +16,7 @@
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 ```
-## 2. KIND-0.31 Installation
+## 3. KIND-0.31 Installation
 ```bash
 # For AMD64 / x86_64
 [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
@@ -18,7 +26,7 @@ chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 ```
 
-## 3. KIND Cluster Creation  
+## 4. KIND Cluster Creation  
 ```yaml
 # kind-cluster-config.yaml
 kind: Cluster
@@ -49,7 +57,7 @@ nodes:
   - role: worker
     image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
 ```
-## 4. Patch the argocd-server service to be accessible on `30080`   
+## 5. Patch the argocd-server service to be accessible on `30080`   
 ```bash
 kubectl patch svc argocd-server -n argocd --type='json' -p='[
       {
@@ -64,12 +72,12 @@ kubectl patch svc argocd-server -n argocd --type='json' -p='[
       }
 ]'
 ```
-## 5. Check the service    
+## 6. Check the service    
 ```bash
 kubectl get svc argocd-server -n argocd -o yaml > argocd-server.yaml
 cat argocd-server.yaml
 ```
 - You will see `type: NodePort` and `nodeport: 30080`  
 
-## 6. Access the ArgoCD using `<public-IP>:30080`
+## 7. Access the ArgoCD using `<public-IP>:30080`
 
