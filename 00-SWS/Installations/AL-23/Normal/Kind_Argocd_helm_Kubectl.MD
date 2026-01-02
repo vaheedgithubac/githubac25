@@ -73,7 +73,7 @@ nodes:
 ```bash 
 kind export kubeconfig --name dev 
 ```
-- Check currently to which context(cluster) we are connected to
+- Check currently to which context(cluster) we are connected to   
 `context = user + cluster + namespace`
 ```bash
 kubectl config current-context
