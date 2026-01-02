@@ -35,6 +35,7 @@ sudo mv ./kind /usr/local/bin/kind
 ```
 
 ## 4. KIND Cluster Creation  
+`kind-cluster.yaml`   
 ```yaml
 # kind-cluster-config.yaml
 kind: Cluster
@@ -65,6 +66,25 @@ nodes:
   - role: worker
     image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
 ```
+- Apply the above `kind-cluster.yaml` to create the KIND cluster `kind create cluster --config=kind-cluster.yaml`
+
+## 5.Execute following commands to check about cluster
+- Checl all the Clusters   
+```bash kind export kubeconfig --name dev ```
+
+- Check currently to which cluster we are connected to
+```bash
+kubectl config current-context
+```
+- Check all the contexts
+```bash
+kubectl config get-contexts
+```
+- To get the kube/config file
+```bash
+kind export kubeconfig --name dev
+```
+
 
 ## 5. ArgoCD Installation   
 ```bash
