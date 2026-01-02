@@ -49,4 +49,27 @@ nodes:
   - role: worker
     image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
 ```
+## 4. Patch the argocd-server service to be accessible on `30080`   
+```bash
+kubectl patch svc argocd-server -n argocd --type='json' -p='[
+      {
+        "op": "replace",
+        "path": "/spec/type",
+        "value": "NodePort"
+      },
+      {
+        "op": "add",
+        "path": "/spec/ports/1/nodePort",
+        "value": 30080
+      }
+]'
+```
+## 5. Check the service    
+```bash
+kubectl get svc argocd-server -n argocd -o yaml > argocd-server.yaml
+cat argocd-server.yaml
+```
+- You will see `type: NodePort` and `nodeport: 30080`  
+
+## 6. Access the ArgoCD using `<public-IP>:30080`
 
