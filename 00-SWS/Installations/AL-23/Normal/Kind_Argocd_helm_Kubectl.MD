@@ -16,7 +16,9 @@ docker ps
 [ $(uname -m) = aarch64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-arm64
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
-                       (or)
+```
+**(or)**
+```bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v0.31.0/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 ```
 ## 3. KIND-0.31.0 Installation
