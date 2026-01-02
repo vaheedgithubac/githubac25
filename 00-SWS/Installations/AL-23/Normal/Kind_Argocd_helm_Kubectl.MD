@@ -128,7 +128,13 @@ cat argocd-server.yaml
 ```
 - You will see `type: NodePort` and `nodeport: 30080`  
 
-## 9. Access the ArgoCD using `<public-IP>:30080`
+## 9. Access the ArgoCD using `<public-IP>:30080`   
+
+## 10. ArgoCD CLI Installation
+```bash
+sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo chmod +x /usr/local/bin/argocd
+```
 
 ## 10. HELM Installation   
 ```bash
