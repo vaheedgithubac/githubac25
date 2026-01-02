@@ -1,6 +1,6 @@
 ## **KIND, ARGOCD, HELM and KUBECTL Installation**  
-`minimum: t2.small/t3.small
- sufficient: t2.medium/t3.medium`
+`Minimum: t2.small/t3.small`   
+ `Sufficient: t2.medium/t3.medium`
 
 ## 1. Docker should be installed
 ```bash
