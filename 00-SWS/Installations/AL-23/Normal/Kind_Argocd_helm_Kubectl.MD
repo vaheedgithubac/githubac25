@@ -82,6 +82,14 @@ kubectl config get-contexts
 ```bash
 kubectl config current-context
 ```
+- Switch to a particular namespace   
+```bash
+kubectl config set-context --current --namespace={{namespace}}
+```
+- Switch to another Cluster
+```bash
+kubectl config use-context {{user}}@{{cluster_name}}
+```
 
 ## 5. ArgoCD Installation   
 ```bash
