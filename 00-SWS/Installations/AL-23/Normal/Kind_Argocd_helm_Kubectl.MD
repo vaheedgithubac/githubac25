@@ -70,9 +70,11 @@ nodes:
 
 ## 5.Execute following commands to check about cluster
 - Checl all the Clusters   
-```bash kind export kubeconfig --name dev ```
-
-- Check currently to which cluster we are connected to
+```bash 
+kind export kubeconfig --name dev 
+```
+- Check currently to which context(cluster) we are connected to
+`context = user + cluster + namespace`
 ```bash
 kubectl config current-context
 ```
