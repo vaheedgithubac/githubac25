@@ -92,13 +92,17 @@ kubectl config set-context --current --namespace={{namespace}}
 kubectl config use-context {{user}}@{{cluster_name}}
 ```
 
-## 5. ArgoCD Installation   
+## 6. ArgoCD Installation   
 ```bash
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
+# 6.1: ArgoCD secret retrieval
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
 
-## 6. Patch the argocd-server service to be accessible on `30080`   
+## 7. Patch the argocd-server service to be accessible on `30080`   
 ```bash
 kubectl patch svc argocd-server -n argocd --type='json' -p='[
       {
@@ -114,16 +118,16 @@ kubectl patch svc argocd-server -n argocd --type='json' -p='[
 ]'
 ```
 
-## 7. Check the service    
+## 8. Check the service    
 ```bash
 kubectl get svc argocd-server -n argocd -o yaml > argocd-server.yaml
 cat argocd-server.yaml
 ```
 - You will see `type: NodePort` and `nodeport: 30080`  
 
-## 8. Access the ArgoCD using `<public-IP>:30080`
+## 9. Access the ArgoCD using `<public-IP>:30080`
 
-## 9. HELM Installation   
+## 10. HELM Installation   
 ```bash
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
 chmod 700 get_helm.sh
