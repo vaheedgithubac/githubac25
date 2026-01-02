@@ -73,7 +73,7 @@ nodes:
 ```bash
 kind export kubeconfig --name {{cluster_name}}
 ```
-- Check all the Clusters   
+- Check all the Contexts (Clusters) 
 ```bash 
 kubectl config get-contexts
 ```
@@ -81,10 +81,6 @@ kubectl config get-contexts
 `context = user + cluster + namespace`
 ```bash
 kubectl config current-context
-```
-- Check all the contexts
-```bash
-kubectl config get-contexts
 ```
 
 ## 5. ArgoCD Installation   
