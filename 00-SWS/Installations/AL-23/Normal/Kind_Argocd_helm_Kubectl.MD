@@ -66,7 +66,8 @@ nodes:
   - role: worker
     image: kindest/node:v1.31.4@sha256:2cb39f7295fe7eafee0842b1052a599a4fb0f8bcf3f83d96c7f4864c357c6c30
 ```
-- Apply the above `kind-cluster.yaml` to create the KIND cluster `kind create cluster --config=kind-cluster.yaml`
+- Apply the above `kind-cluster.yaml` to create the KIND cluster    
+`kind create cluster --config=kind-cluster.yaml`   
 
 ## 5.Execute following commands to check about cluster
 - To get the kube/config file
