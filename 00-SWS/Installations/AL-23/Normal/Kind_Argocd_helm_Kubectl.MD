@@ -71,7 +71,7 @@ nodes:
 ## 5.Execute following commands to check about cluster
 - To get the kube/config file
 ```bash
-kind export kubeconfig --name dev
+kind export kubeconfig --name {{cluster_name}}
 ```
 - Check all the Clusters   
 ```bash 
