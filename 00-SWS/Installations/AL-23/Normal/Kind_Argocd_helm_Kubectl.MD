@@ -10,17 +10,20 @@ docker ps
 ```
 ## 2.Kubectl-1.31 Installation   
 ```bash
-# For AMD64 / x86_64
-[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
-# For ARM64
-[ $(uname -m) = aarch64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-arm64
-chmod +x ./kind
-sudo mv ./kind /usr/local/bin/kind
+KUBECTL_VERSION="v1.31.0"
+
+curl -LO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+kubectl version --client
+kubectl version
 ```
 **(or)**
 ```bash
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v0.31.0/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 ```
+
 ## 3. KIND-0.31.0 Installation
 ```bash
 # For AMD64 / x86_64
@@ -68,7 +71,8 @@ nodes:
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
-## 5. Patch the argocd-server service to be accessible on `30080`   
+
+## 6. Patch the argocd-server service to be accessible on `30080`   
 ```bash
 kubectl patch svc argocd-server -n argocd --type='json' -p='[
       {
@@ -83,12 +87,13 @@ kubectl patch svc argocd-server -n argocd --type='json' -p='[
       }
 ]'
 ```
-## 6. Check the service    
+
+## 7. Check the service    
 ```bash
 kubectl get svc argocd-server -n argocd -o yaml > argocd-server.yaml
 cat argocd-server.yaml
 ```
 - You will see `type: NodePort` and `nodeport: 30080`  
 
-## 7. Access the ArgoCD using `<public-IP>:30080`
+## 8. Access the ArgoCD using `<public-IP>:30080`
 
