@@ -21,7 +21,7 @@ kubectl version
 ```
 **(or)**
 ```bash
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v0.31.0/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.31.0/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
 ```
 
 ## 3. KIND-0.31.0 Installation
@@ -96,4 +96,14 @@ cat argocd-server.yaml
 - You will see `type: NodePort` and `nodeport: 30080`  
 
 ## 8. Access the ArgoCD using `<public-IP>:30080`
+
+## 9. HELM Installation   
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+chmod 700 get_helm.sh
+./get_helm.sh
+
+helm version
+```
+
 
