@@ -132,11 +132,12 @@ cat argocd-server.yaml
 
 ## 10. ArgoCD CLI Installation
 ```bash
-sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-sudo chmod +x /usr/local/bin/argocd
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
 ```
 
-## 10. HELM Installation   
+## 11. HELM Installation   
 ```bash
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
 chmod 700 get_helm.sh
@@ -145,7 +146,7 @@ chmod 700 get_helm.sh
 helm version
 ```
 
-## 11. Trouble Shooting Commands   
+## 12. Trouble Shooting Commands   
 ```bash
 helm template frontend expense/app-code/frontend/CI-CD/CD/helm -f expense/app-code/frontend/CI-CD/CD/helm/values-dockerHub.yml
 
