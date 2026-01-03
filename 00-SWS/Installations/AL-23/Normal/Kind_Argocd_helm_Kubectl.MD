@@ -145,4 +145,31 @@ chmod 700 get_helm.sh
 helm version
 ```
 
+## 11. Trouble Shooting Commands   
+```bash
+helm template frontend expense/app-code/frontend/CI-CD/CD/helm -f expense/app-code/frontend/CI-CD/CD/helm/values-dockerHub.yml
+
+helm template backend expense/app-code/backend/CI-CD/CD/helm \
+  -f expense/app-code/backend/CI-CD/CD/helm/values-dockerHub.yml \
+  --dry-run=client --debug
+
+
+helm template frontend expense/app-code/frontend/CI-CD/CD/helm \
+  -f expense/app-code/frontend/CI-CD/CD/helm/values-dockerHub.yml \
+  --debug --dry-run=client
+
+helm template database expense/app-code/database/CI-CD/CD/helm \
+  -f expense/app-code/database/CI-CD/CD/helm/values-dockerHub.yml \
+  --dry-run=client --debug
+
+ argocd app sync expense-dev-frontend
+ argocd app sync expense-dev-backend
+ argocd app sync expense-dev-database
+
+ argocd login <ARGOCD_SERVER> \
+  --username <USERNAME> \
+  --password <PASSWORD> \
+  [--insecure]
+```
+
 
