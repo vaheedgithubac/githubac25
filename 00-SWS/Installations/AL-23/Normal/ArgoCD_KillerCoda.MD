@@ -22,4 +22,10 @@ Then restart:
 kubectl rollout restart deployment argocd-server -n argocd
 ```
 
+3. Change Service to NodePort   
+```bash
+kubectl patch svc argocd-server -n argocd \
+-p '{"spec": {"type": "NodePort"}}'
+```
+
 
