@@ -28,4 +28,39 @@ kubectl patch svc argocd-server -n argocd \
 -p '{"spec": {"type": "NodePort"}}'
 ```
 
+## 4. Helm Installation   
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+chmod 700 get_helm.sh
+./get_helm.sh
+
+helm version
+```
+
+## 5. Trouble Shooting Commands   
+```bash
+helm template frontend expense/app-code/frontend/CI-CD/CD/helm -f expense/app-code/frontend/CI-CD/CD/helm/values-dockerHub.yml
+
+helm template backend expense/app-code/backend/CI-CD/CD/helm \
+  -f expense/app-code/backend/CI-CD/CD/helm/values-dockerHub.yml \
+  --dry-run=client --debug
+
+helm template frontend expense/app-code/frontend/CI-CD/CD/helm \
+  -f expense/app-code/frontend/CI-CD/CD/helm/values-dockerHub.yml \
+  --debug --dry-run=client
+
+helm template database expense/app-code/database/CI-CD/CD/helm \
+  -f expense/app-code/database/CI-CD/CD/helm/values-dockerHub.yml \
+  --dry-run=client --debug
+
+ argocd app sync expense-dev-frontend
+ argocd app sync expense-dev-backend
+ argocd app sync expense-dev-database
+
+ argocd login <ARGOCD_SERVER> \
+  --username <USERNAME> \
+  --password <PASSWORD> \
+  [--insecure]
+```
+
 
