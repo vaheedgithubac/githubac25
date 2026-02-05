@@ -161,7 +161,7 @@ kubectl describe pod <pod-name> -n app
   - Wrong image name
   - Wrong tag
   - Secret not attached to ServiceAccount
-  - Wrong Docker Hub credentials
+  - Wrong Docker Hub credentials  
 **Fix:**
   - Double-check image name  
   - Recreate secret  
