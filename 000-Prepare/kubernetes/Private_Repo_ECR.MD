@@ -2,11 +2,11 @@
 ✅ This is the **BEST and recommended approach** for EKS + ECR.  
 1️⃣ What IRSA solves (big picture)
 
-**Problem without IRSA**
+**Problem without IRSA:**
   - You create ECR secrets
   - Tokens expire every 12 hours
-  - You must rotate them
-**IRSA solution**
+  - You must rotate them        
+**IRSA solution:**
   - No Docker secrets
   - No tokens
   - No rotation
