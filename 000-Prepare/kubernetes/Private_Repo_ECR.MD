@@ -29,7 +29,7 @@ Pod
 **You must have:**  
 ✔ EKS cluster  
 ✔ AWS CLI configured  
-✔ eksctl installed  
+✔ `eksctl` installed  
 ✔ ECR repository exists  
 
 ## 4️⃣ Enable OIDC provider (one-time)
