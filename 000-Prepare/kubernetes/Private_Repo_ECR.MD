@@ -84,7 +84,7 @@ eksctl create iamserviceaccount \
 ```
 ✅ Result:
   - IAM Role created
-  - ServiceAccount `ecr-sa` created in app namespace  
+  - ServiceAccount `ecr-sa` created in `app` namespace  
 
 ### 7️⃣ Use the ServiceAccount in your Deployment  
 Deployment.yaml
