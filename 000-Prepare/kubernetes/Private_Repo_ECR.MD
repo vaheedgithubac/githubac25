@@ -53,7 +53,8 @@ Create a file `ecr-policy.json`:
       "Action": [
         "ecr:GetAuthorizationToken",
         "ecr:BatchGetImage",
-        "ecr:GetDownloadUrlForLayer"
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchCheckLayerAvailability"
       ],
       "Resource": "*"
     }
