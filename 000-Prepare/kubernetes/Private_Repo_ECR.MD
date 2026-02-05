@@ -72,6 +72,7 @@ This command does everything:
   - Attaches ECR policy
   - Creates Kubernetes ServiceAccount
   - Links them together
+
 ```bash
 eksctl create iamserviceaccount \
   --cluster my-cluster \
@@ -83,7 +84,7 @@ eksctl create iamserviceaccount \
 ```
 ✅ Result:
   - IAM Role created
-  - ServiceAccount ecr-sa created in app namespace  
+  - ServiceAccount `ecr-sa` created in app namespace  
 
 ### 7️⃣ Use the ServiceAccount in your Deployment  
 Deployment.yaml
