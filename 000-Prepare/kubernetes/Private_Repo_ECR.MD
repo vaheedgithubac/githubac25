@@ -87,7 +87,7 @@ eksctl create iamserviceaccount \
   - ServiceAccount `ecr-sa` created in `app` namespace  
 
 ### 7️⃣ Use the ServiceAccount in your Deployment  
-Deployment.yaml
+`Deployment.yaml`
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
