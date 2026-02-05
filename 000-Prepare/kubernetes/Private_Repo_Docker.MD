@@ -37,7 +37,7 @@ kubectl create secret docker-registry dockerhub-secret \
   -n app
 ```
 **🔹 What this does:**  
-  - Creates secret of type kubernetes.io/dockerconfigjson  
+  - Creates secret of type **kubernetes.io/dockerconfigjson**  
   - Generates valid .dockerconfigjson  
   - Handles base64 correctly 
 
