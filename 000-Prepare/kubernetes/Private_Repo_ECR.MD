@@ -6,6 +6,7 @@
   - You create ECR secrets
   - Tokens expire every 12 hours
   - You must rotate them        
+
 **IRSA solution:**
   - No Docker secrets
   - No tokens
