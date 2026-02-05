@@ -1,5 +1,5 @@
 ## How to download ECR Private Repo image in Kubernetes
-`**Note:** This will not work, instead of this you attach 'AmazonEC2ContainerRegistryReadOnly' Policy to EKS workernodes which is recommended by AWS`
+`**Note:**` `This will not work, instead of this you attach 'AmazonEC2ContainerRegistryReadOnly' Policy to EKS workernodes which is recommended by AWS`
 
 ✅ This is the **BEST and recommended approach** for EKS + ECR.  
 1️⃣ What IRSA solves (big picture)
