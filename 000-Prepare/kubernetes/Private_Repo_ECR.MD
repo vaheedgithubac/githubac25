@@ -116,7 +116,7 @@ spec:
 
 ## 8️⃣ What happens at runtime (flow)  
 **1. Pod starts**  
-**2. kubelet requests image from ECR**  
+**2. Kubelet requests image from ECR**  
 **3. AWS checks IAM role via OIDC**  
 **4. Role has ECR permissions**  
 **5. Image is pulled**  
